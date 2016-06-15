@@ -16,3 +16,4 @@ sys2 = tf([1, 1], [1, 1, 0])
 (y2a, T2a) = step(sys2, T = arange(0, 10, 0.1))
 
 plot(T1a, y1a, T1b, y1b, T1c, y1c, T2a, y2a)
+show()
