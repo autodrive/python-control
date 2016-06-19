@@ -3,7 +3,7 @@ Find slycot functions directly or indirectly called in python-control
 >>> python find_slycot.py [path to slycot local repository]
 """
 import os
-import re
+from abc import abstractmethod, ABCMeta
 from pprint import pprint
 
 
@@ -59,7 +59,7 @@ def print_sorted_keys(dictionary):
             else:
                 return None
 
-    keys.sort(cmp=compare)
+    keys.sort()
     for i, key in enumerate(keys):
         print(i, key, len(dictionary[key]))
         pprint(dictionary[key])
@@ -159,7 +159,7 @@ class RecursiveFinderFortran(RecursiveFinder):
         return result
 
 
-class FindFunctionNamesFromImport(object):
+class FindFunctionNames(metaclass=ABCMeta):
     def __init__(self, finder_result_dict):
         self.finder_result_dict = finder_result_dict
         self.function_names = {}
@@ -173,6 +173,50 @@ class FindFunctionNamesFromImport(object):
         return self.function_names
 
     @staticmethod
+    @abstractmethod
+    def is_comment(line):
+        """
+        python version
+        Parameters
+        ----------
+        line
+
+        Returns
+        -------
+
+        """
+        pass
+
+    @abstractmethod
+    def handle_file(self, filename, line, line_number, path):
+        """
+        find function names from import line
+        Parameters
+        ----------
+        filename
+        line
+        line_number
+        path
+
+        Returns
+        -------
+
+        """
+        pass
+
+    def handle_line_if_not_comment(self, line, path, filename, line_number):
+        if not self.is_comment(line):
+            self.handle_file(filename, line, line_number, path)
+
+    def add_function_name(self, key, path, filename, line_number):
+        if key in self.function_names:
+            self.function_names[key].append((path, filename, line_number))
+        else:
+            self.function_names[key] = [(path, filename, line_number)]
+
+
+class FindFunctionNamesFromImport(FindFunctionNames):
+    @staticmethod
     def is_comment(line):
         """
         python version
@@ -185,10 +229,6 @@ class FindFunctionNamesFromImport(object):
 
         """
         return '#' == line.strip()[0]
-
-    def handle_line_if_not_comment(self, line, path, filename, line_number):
-        if not self.is_comment(line):
-            self.handle_file(filename, line, line_number, path)
 
     def handle_file(self, filename, line, line_number, path):
         """
@@ -230,14 +270,8 @@ class FindFunctionNamesFromImport(object):
         key = line_strip_split[-1]
         return key
 
-    def add_function_name(self, key, path, filename, line_number):
-        if key in self.function_names:
-            self.function_names[key].append((path, filename, line_number))
-        else:
-            self.function_names[key] = [(path, filename, line_number)]
 
-
-class FindFunctionUsedFortran(FindFunctionNamesFromImport):
+class FindFunctionUsedFortran(FindFunctionNames):
     @staticmethod
     def is_comment(line):
         return ' ' != line[6 - 1]
