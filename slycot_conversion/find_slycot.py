@@ -1,13 +1,28 @@
+"""
+Find slycot functions directly or indirectly called in python-control
+>>> python find_slycot.py [path to slycot local repository]
+"""
 import os
 import re
 from pprint import pprint
 
 
 def pwd():
+    """
+    Returns
+    -------
+    absolute path to current working directory
+    """
     return os.path.abspath(os.curdir)
 
 
 def get_first_script_parameter():
+    """
+    If first argument of script not given, use current directory
+    Returns
+    -------
+
+    """
     from sys import argv
     result = os.curdir
     if 1 < len(argv):
@@ -15,32 +30,53 @@ def get_first_script_parameter():
     return os.path.abspath(result)
 
 
-def print_sorted_keys(function_names):
-    keys = list(function_names.keys())
+def print_sorted_keys(dictionary):
+    keys = list(dictionary.keys())
 
     def compare(a, b):
-        if len(function_names[a]) > len(function_names[b]):
+        """
+        longer items first
+        Parameters
+        ----------
+        a
+        b
+
+        Returns
+        -------
+
+        """
+        if len(dictionary[a]) > len(dictionary[b]):
             return -1
-        elif len(function_names[a]) < len(function_names[b]):
+        elif len(dictionary[a]) < len(dictionary[b]):
             return 1
         else:
-            return cmp(a, b)
+            if a > b:
+                return 1
+            elif a < b:
+                return -1
+            elif a == b:
+                return 0
+            else:
+                return None
 
     keys.sort(cmp=compare)
     for i, key in enumerate(keys):
-        print(i, key, len(function_names[key]))
-        pprint(function_names[key])
+        print(i, key, len(dictionary[key]))
+        pprint(dictionary[key])
 
 
 class RecursiveFinder(object):
+    """
+    Search for pattern in files of given extension recursively
+    """
     def __init__(self, initial_path=os.curdir, extension='.py', pattern="from" + " slycot import"):
-        self.abs_return_path = os.path.abspath(os.curdir)
-        abs_initial_path = os.path.abspath(initial_path)
+        self.abs_return_path = pwd()
         self.extension = extension
         self.pattern = pattern
 
         self.result = {}
 
+        abs_initial_path = os.path.abspath(initial_path)
         if not os.path.exists(abs_initial_path):
             raise IOError('File does not exist: %s' % abs_initial_path)
         elif not os.path.isdir(abs_initial_path):
@@ -204,29 +240,69 @@ class FindFunctionNamesFromImport(object):
 class FindFunctionUsedFortran(FindFunctionNamesFromImport):
     @staticmethod
     def is_comment(line):
+        """
+        If a line's first column is C, it is a comment
+        Parameters
+        ----------
+        line
+
+        Returns
+        -------
+
+        """
         return 'C' == line[1 - 1]
 
     def handle_file(self, filename, line, line_number, path):
+        """
+        find function name from call line
+        and add Fortran file path with filename and line number
+        Parameters
+        ----------
+        filename
+        line
+        line_number
+        path
+
+        Returns
+        -------
+
+        """
         function_name = self.find_function_name_from_call_line(line)
         self.add_function_name(function_name, os.path.join('slycot', 'src'), filename, line_number)
 
     @staticmethod
     def find_function_name_from_call_line(line):
+        """
+        find string between 'CALL' and '('
+        Parameters
+        ----------
+        line
+
+        Returns
+        -------
+
+        """
+        # remove white space
         line_strip = line.strip()
+        # split by whitespace
         line_strip_split = line_strip.split()
         while 'CALL' != line_strip_split[0]:
             line_strip_split.pop(0)
+        # string right after CALL
         function_name_candidate = line_strip_split[1]
+        # string before '(' as function name
         function_name = function_name_candidate[:function_name_candidate.index('(')].lower()
         return function_name
 
 
 def main():
+    # from python import lines, find fortran function names
     python_finder = RecursiveFinder(os.pardir)
 
     python_function_finder = FindFunctionNamesFromImport(python_finder.result)
     function_names = python_function_finder.find_function_names()
 
+    # from fortran CALL lines, find selected fortran function names
     fortran_finder = RecursiveFinderFortran(function_list=tuple(function_names.keys()))
 
     fortran_function_finder = FindFunctionUsedFortran(fortran_finder.result)
