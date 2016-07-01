@@ -265,6 +265,7 @@ C     Algebraic Riccati equation, closed loop system, continuous-time
 C     system, discrete-time system, optimal regulator, Schur form.
 C
 C     ******************************************************************
+"""
 C
 C     .. Parameters ..
       DOUBLE PRECISION  ZERO, ONE
@@ -337,7 +338,7 @@ C
 C
 C        Error return.
 C
-         CALL XERBLA( 'SB02MT', -INFO )
+         CALL XERBLA( 'sb02mt', -INFO )
          RETURN
       END IF
 C
