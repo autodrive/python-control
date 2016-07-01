@@ -2,6 +2,7 @@
 Find slycot functions directly or indirectly called in python-control
 >>> python find_slycot.py [path to slycot local repository]
 """
+import copy
 import os
 import re
 from pprint import pprint
@@ -69,7 +70,8 @@ class RecursiveFinder(object):
     """
     Search for pattern in files of given extension recursively
     """
-    def __init__(self, initial_path=os.curdir, extension='.py', pattern="from" + " slycot import"):
+
+    def __init__(self, initial_path=os.curdir, extension='.py', pattern="from" + " slycot import", b_rel_path=True):
         self.abs_return_path = pwd()
         self.extension = extension
         self.pattern = pattern
@@ -77,6 +79,8 @@ class RecursiveFinder(object):
         self.result = {}
 
         abs_initial_path = os.path.abspath(initial_path)
+        self.b_rel_path = b_rel_path
+
         if not os.path.exists(abs_initial_path):
             raise IOError('File does not exist: %s' % abs_initial_path)
         elif not os.path.isdir(abs_initial_path):
@@ -93,10 +97,17 @@ class RecursiveFinder(object):
     def walker(self):
         for root, dirs, files in os.walk(self.abs_initial_path):
             # TODO : list of folders to ignore
-            if '.git' not in root and '.idea' not in root and '\\build\\' not in root:
+            if ('.git' not in root) \
+                    and ('.idea' not in root)\
+                    and ('\\build\\' not in root)\
+                    and ('slycot_conversion' not in root):
                 folder_list = self.process_folder(root, files)
                 if folder_list:
-                    self.result[root] = folder_list
+                    if self.b_rel_path:
+                        key = os.path.relpath(root, self.abs_initial_path)
+                    else:
+                        key = root
+                    self.result[key] = folder_list
 
     def process_folder(self, root, files):
         current_path = pwd()
@@ -172,6 +183,7 @@ class FindFunctionNamesFromImport(object):
 
         return self.function_names
 
+    # TODO : More Testable Code : line -> function name
     @staticmethod
     def is_comment(line):
         """
@@ -206,10 +218,7 @@ class FindFunctionNamesFromImport(object):
         """
         line_strip = line.strip()
         line_strip_split = line_strip.split()
-        if 4 == len(line_strip_split):
-            self.handle_one_function_import(line_strip_split, path, filename, line_number)
-        elif 5 == len(line_strip_split):
-            self.handle_two_functions_import(line_strip_split, path, filename, line_number)
+        self.handle_two_functions_import(line_strip_split, path, filename, line_number)
 
     def handle_two_functions_import(self, line_strip_split, path, filename, line_number):
         function_name_list = self.find_function_names_from_import(line_strip_split)
@@ -218,17 +227,8 @@ class FindFunctionNamesFromImport(object):
 
     @staticmethod
     def find_function_names_from_import(line_strip_split):
-        function_name_list = [line_strip_split[3][:-1], line_strip_split[4]]
+        function_name_list = [function_name.strip(',') for function_name in line_strip_split[3:]]
         return function_name_list
-
-    def handle_one_function_import(self, line_strip_split, path, filename, line_number):
-        function_name = self.find_function_name_from_import(line_strip_split)
-        self.add_function_name(function_name, path, filename, line_number)
-
-    @staticmethod
-    def find_function_name_from_import(line_strip_split):
-        key = line_strip_split[-1]
-        return key
 
     def add_function_name(self, key, path, filename, line_number):
         if key in self.function_names:
@@ -238,6 +238,16 @@ class FindFunctionNamesFromImport(object):
 
 
 class FindFunctionUsedFortran(FindFunctionNamesFromImport):
+    def __init__(self, finder_result_dict, function_names=None):
+        FindFunctionNamesFromImport.__init__(self, finder_result_dict)
+        self.finder_result_dict = finder_result_dict
+        if function_names is None:
+            self.function_names = {}
+        elif isinstance(function_names, dict):
+            self.function_names = copy.deepcopy(function_names)
+        else:
+            raise TypeError('function_names expected to be a dictionary')
+
     @staticmethod
     def is_comment(line):
         """
@@ -282,16 +292,9 @@ class FindFunctionUsedFortran(FindFunctionNamesFromImport):
         -------
 
         """
-        # remove white space
-        line_strip = line.strip()
-        # split by whitespace
-        line_strip_split = line_strip.split()
-        while 'CALL' != line_strip_split[0]:
-            line_strip_split.pop(0)
-        # string right after CALL
-        function_name_candidate = line_strip_split[1]
-        # string before '(' as function name
-        function_name = function_name_candidate[:function_name_candidate.index('(')].lower()
+        # string between CALL and '('
+        function_name_candidate = re.findall(r'CALL\s*(.*?)\s*\(', line)
+        function_name = function_name_candidate[0].lower()
         return function_name
 
 
@@ -302,14 +305,41 @@ def main():
     python_function_finder = FindFunctionNamesFromImport(python_finder.result)
     function_names = python_function_finder.find_function_names()
 
+    print("imported ".ljust(60, '#'))
+    pprint(function_names)
+    print("end imported ".ljust(60, '*'))
+
     # from fortran CALL lines, find selected fortran function names
     fortran_finder = RecursiveFinderFortran(function_list=tuple(function_names.keys()))
 
-    fortran_function_finder = FindFunctionUsedFortran(fortran_finder.result)
-    fortran_function_finder.function_names = function_names
+    fortran_function_finder = FindFunctionUsedFortran(fortran_finder.result, function_names)
     fortran_function_names = fortran_function_finder.find_function_names()
+    print("called ".ljust(60, '#'))
+    pprint(fortran_function_names)
+    print("end called ".ljust(60, '*'))
 
-    print_sorted_keys(fortran_function_names)
+    # find go to lines from Fortran source codes recursively visiting sub-folders
+    fortran_go_to = RecursiveFinderFortran(function_list=tuple(function_names.keys()), pattern='GO')
+
+    print("with go to ".ljust(60, '#'))
+    pprint(fortran_go_to.result)
+    fortran_go_to_set = set(fortran_go_to.result.values()[0].keys())
+    print("end with go to ".ljust(60, '*'))
+
+    # find go to lines from Fortran source codes recursively visiting sub-folders
+    fortran_goto = RecursiveFinderFortran(function_list=tuple(function_names.keys()), pattern='GOTO')
+
+    print("with goto ".ljust(60, '#'))
+    pprint(fortran_goto.result)
+    fortran_goto_set = set(fortran_goto.result.values()[0].keys())
+    print("end with goto ".ljust(60, '*'))
+
+    fortran_go_to_set.union(fortran_goto_set)
+    print("with go to or goto ".ljust(60, '#'))
+    print(len(fortran_go_to_set))
+    for function_name in sorted(list(fortran_go_to_set)):
+        print(function_name.lower()[:-2])
+    print("end go to or goto ".ljust(60, '*'))
 
 if __name__ == '__main__':
     main()

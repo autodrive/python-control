@@ -4,6 +4,121 @@ import unittest
 import find_slycot
 
 
+class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
+    def setUp(self):
+        self.result_dict = {'..\\external': {'yottalab.py': [(28, 'from slycot import sb02od')]},
+                            '..\\control': {
+            'robust.py': [(86, '        from slycot import sb10hd'), (145, '        from slycot import sb10ad')],
+            'modelsimp.py': [(256, '            from slycot import ab09ad')],
+            'statefbk.py': [(76, '        from slycot import sb01bd'), (192, '        from slycot import sb02md'),
+                            (193, '        from slycot import sb02mt'), (372, '        from slycot import sb03md')],
+            'xferfcn.py': [(1092, '            from slycot import tb04ad')],
+            'mateqn.py': [(76, '        from slycot import sb03md'), (81, '        from slycot import sb04md'),
+                          (193, '            from slycot import sg03ad'), (258, '        from slycot import sb03md'),
+                          (263, '        from slycot import sb04qd'), (268, '        from slycot import sg03ad'),
+                          (439, '        from slycot import sb02md'), (444, '        from slycot import sb02mt'),
+                          (450, '        from slycot import sg02ad'), (708, '        from slycot import sb02md'),
+                          (713, '        from slycot import sb02mt'), (719, '        from slycot import sg02ad')],
+            'statesp.py': [(480, '            from slycot import tb01pd'),
+                           (646, '            from slycot import td04ad')]},
+                            '..\\examples': {
+            'slicot-test.py': [(19, '#from slycot import sb01bd'), (24, '# from slycot import ab01md')]},
+                            '..\\control\\tests': {
+                                'slycot_convert_test.py': [(56, '        from slycot import tb04ad, td04ad'),
+                                                           (115, '        from slycot import tb04ad, td04ad')]}}
+        self.f = find_slycot.FindFunctionNamesFromImport(self.result_dict)
+
+    def test_main_python(self):
+        pardir = os.path.abspath(os.pardir)
+        r = find_slycot.RecursiveFinder(pardir)
+        f = find_slycot.FindFunctionNamesFromImport(r.result)
+        result = f.find_function_names()
+        expected = {'ab09ad': [('control', 'modelsimp.py', 256)],
+                    'sb01bd': [('control', 'statefbk.py', 76)],
+                    'sb02md': [('control', 'statefbk.py', 192),
+                               ('control', 'mateqn.py', 439),
+                               ('control', 'mateqn.py', 708)],
+                    'sb02mt': [('control', 'statefbk.py', 193),
+                               ('control', 'mateqn.py', 444),
+                               ('control', 'mateqn.py', 713)],
+                    'sb02od': [('external', 'yottalab.py', 28)],
+                    'sb03md': [('control', 'statefbk.py', 372),
+                               ('control', 'mateqn.py', 76),
+                               ('control', 'mateqn.py', 258)],
+                    'sb04md': [('control', 'mateqn.py', 81)],
+                    'sb04qd': [('control', 'mateqn.py', 263)],
+                    'sb10ad': [('control', 'robust.py', 145)],
+                    'sb10hd': [('control', 'robust.py', 86)],
+                    'sg02ad': [('control', 'mateqn.py', 450), ('control', 'mateqn.py', 719)],
+                    'sg03ad': [('control', 'mateqn.py', 193), ('control', 'mateqn.py', 268)],
+                    'tb01pd': [('control', 'statesp.py', 480)],
+                    'tb04ad': [('control', 'xferfcn.py', 1092),
+                               ('control\\tests', 'slycot_convert_test.py', 56),
+                               ('control\\tests', 'slycot_convert_test.py', 115)],
+                    'td04ad': [('control', 'statesp.py', 646),
+                               ('control\\tests', 'slycot_convert_test.py', 56),
+                               ('control\\tests', 'slycot_convert_test.py', 115)]}
+
+        expected_key_set = set(expected.keys())
+        result_key_set = set(result.keys())
+        self.assertSetEqual(expected_key_set, result_key_set)
+
+        for key in expected_key_set:
+            self.assertSequenceEqual(result[key], expected[key])
+
+    def test_find_function_names_from_import(self):
+        arg_result_tuple = (
+            (['from', 'slycot', 'import', 'tb04ad,', 'td04ad'], ['tb04ad', 'td04ad']),
+            # (['#from', 'slycot', 'import', 'sb01bd'], ['sb01bd']),
+            # (['#', 'from', 'slycot', 'import', 'ab01md'], ['ab01md']),
+            (['from', 'slycot', 'import', 'sb10hd'], ['sb10hd']),
+            (['from', 'slycot', 'import', 'sb10ad'], ['sb10ad']),
+            (['from', 'slycot', 'import', 'ab09ad'], ['ab09ad']),
+            (['from', 'slycot', 'import', 'sb01bd'], ['sb01bd']),
+            (['from', 'slycot', 'import', 'sb02md'], ['sb02md']),
+            (['from', 'slycot', 'import', 'sb02mt'], ['sb02mt']),
+            (['from', 'slycot', 'import', 'sb03md'], ['sb03md']),
+            (['from', 'slycot', 'import', 'tb04ad'], ['tb04ad']),
+            (['from', 'slycot', 'import', 'sb03md'], ['sb03md']),
+            (['from', 'slycot', 'import', 'sb04md'], ['sb04md']),
+            (['from', 'slycot', 'import', 'sg03ad'], ['sg03ad']),
+            (['from', 'slycot', 'import', 'sb03md'], ['sb03md']),
+            (['from', 'slycot', 'import', 'sb04qd'], ['sb04qd']),
+            (['from', 'slycot', 'import', 'sg03ad'], ['sg03ad']),
+            (['from', 'slycot', 'import', 'sb02md'], ['sb02md']),
+            (['from', 'slycot', 'import', 'sb02mt'], ['sb02mt']),
+            (['from', 'slycot', 'import', 'sg02ad'], ['sg02ad']),
+            (['from', 'slycot', 'import', 'sb02md'], ['sb02md']),
+            (['from', 'slycot', 'import', 'sb02mt'], ['sb02mt']),
+            (['from', 'slycot', 'import', 'sg02ad'], ['sg02ad']),
+            (['from', 'slycot', 'import', 'tb01pd'], ['tb01pd']),
+            (['from', 'slycot', 'import', 'td04ad'], ['td04ad']),
+            (['from', 'slycot', 'import', 'sb02od'], ['sb02od']),
+        )
+
+        for arg, expected in arg_result_tuple:
+            self.assertEqual(self.f.find_function_names_from_import(arg), expected)
+
+    def test_handle_file4(self):
+        args4 = ('yottalab.py',
+                 'from slycot import sb02od',
+                 28,
+                 os.path.join('..', 'control', 'tests'))
+        self.f.handle_file(*args4)
+        expected = {'sb02od': [('..\\control\\tests', 'yottalab.py', 28)]}
+        self.assertSequenceEqual(self.f.function_names, expected)
+
+    def test_handle_file5(self):
+        args5 = ('slycot_convert_test.py',
+                 '''        from slycot import tb04ad, td04ad''',
+                 115,
+                 os.path.join('..', 'control', 'tests'))
+        self.f.handle_file(*args5)
+        expected = {'td04ad': [('..\\control\\tests', 'slycot_convert_test.py', 115)],
+                    'tb04ad': [('..\\control\\tests', 'slycot_convert_test.py', 115)]}
+        self.assertSequenceEqual(self.f.function_names, expected)
+
+
 class TestFindSlycotFindFunctionUsedFortran(unittest.TestCase):
     def setUp(self):
         self.result_dict = {os.path.join('..', '..', 'slycot', 'slycot', 'src'): {
