@@ -167,8 +167,25 @@ def indent_logic(python_line_list_split, tab_stop=4):
     decrease_itself = {'SUBROUTINE', 'elif', 'ELSE', 'end_if', 'CONTINUE', 'END'}
 
     next_indent = 0
+    indent = 0
 
     stack = []
+
+    def decrease_self_indent():
+        indent = max((0, indent - tab_stop))
+        return indent
+
+    def decrease_next_indent(line):
+        append_this = stack.pop()
+        append_this.insert(0, '#')
+        line.append(append_this)
+        next_indent = indent
+        return next_indent
+
+    def increase_next_indent(line):
+        stack.append(list(line))
+        next_indent = indent + tab_stop
+        return next_indent
 
     for line in python_line_list_split:
         if '#' != line[0]:
@@ -192,25 +209,6 @@ def indent_logic(python_line_list_split, tab_stop=4):
             format_string = '%' + str(indent) + 'd'
             line.insert(0, format_string % len(stack))
     # end of indent loop
-
-
-def decrease_self_indent(indent, tab_stop):
-    indent = max((0, indent - tab_stop))
-    return indent
-
-
-def decrease_next_indent(line, indent, next_indent, stack):
-    append_this = stack.pop()
-    append_this.insert(0, '#')
-    line.append(append_this)
-    next_indent = indent
-    return next_indent
-
-
-def increase_next_indent(line, indent, next_indent, stack, tab_stop):
-    stack.append(list(line))
-    next_indent = indent + tab_stop
-    return next_indent
 
 
 def main(fortran_filename, b_include_fortran=True):
