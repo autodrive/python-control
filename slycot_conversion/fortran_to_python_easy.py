@@ -175,17 +175,13 @@ def indent_logic(python_line_list_split, tab_stop=4):
             indent = next_indent
             for word in line:
                 if word in decrease_itself:
-                    indent = max((0, indent - tab_stop))
+                    indent = decrease_self_indent(indent, tab_stop)
 
                 if word in increase_next:
-                    stack.append(list(line))
-                    next_indent = indent + tab_stop
+                    next_indent = increase_next_indent(line, indent, next_indent, stack, tab_stop)
                     break
                 elif word in decrease_next:
-                    append_this = stack.pop()
-                    append_this.insert(0, '#')
-                    line.append(append_this)
-                    next_indent = indent
+                    next_indent = decrease_next_indent(line, indent, next_indent, stack)
                     break
 
             if indent < 0:
@@ -196,6 +192,25 @@ def indent_logic(python_line_list_split, tab_stop=4):
             format_string = '%' + str(indent) + 'd'
             line.insert(0, format_string % len(stack))
     # end of indent loop
+
+
+def decrease_self_indent(indent, tab_stop):
+    indent = max((0, indent - tab_stop))
+    return indent
+
+
+def decrease_next_indent(line, indent, next_indent, stack):
+    append_this = stack.pop()
+    append_this.insert(0, '#')
+    line.append(append_this)
+    next_indent = indent
+    return next_indent
+
+
+def increase_next_indent(line, indent, next_indent, stack, tab_stop):
+    stack.append(list(line))
+    next_indent = indent + tab_stop
+    return next_indent
 
 
 def main(fortran_filename, b_include_fortran=True):
