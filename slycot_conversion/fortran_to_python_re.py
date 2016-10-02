@@ -98,11 +98,15 @@ def find_type_variable_names(fortran_source_txt, type_name):
 
 class FortranVariableTypesIterator:
     def __init__(self):
+        # TODO : lower case handling?
+
         self.fortran_type_name_list = (
             'DOUBLE PRECISION',
             'CHARACTER',
             'INTEGER',
             'LOGICAL',
+            # TODO : Subroutine vs Function?
+            'EXTERNAL',
         )
 
     def __iter__(self):
