@@ -185,3 +185,10 @@ class TestFortranToPythonReDeclarationLines(unittest.TestCase):
         self.maxDiff = 1024
         self.assertSequenceEqual(expected_variable_info_list, parsed_variable_info_list)
         self.maxDiff = maxDiff_backup
+
+    def test_FortranVariableDeclarationsFinder(self):
+        finder = f2pr.FortranVariableDeclarationsFinder()
+        type_set = set([t for t in finder])
+        expected_set = set(finder.fortran_type_name_list)
+
+        self.assertSetEqual(expected_set, type_set)

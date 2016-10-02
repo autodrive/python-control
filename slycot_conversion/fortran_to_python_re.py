@@ -96,6 +96,20 @@ def find_type_variable_names(fortran_source_txt, type_name):
     return tuple(variable_names)
 
 
+class FortranVariableDeclarationsFinder:
+    def __init__(self):
+        self.fortran_type_name_list = (
+            'DOUBLE PRECISION',
+            'CHARACTER',
+            'INTEGER',
+            'LOGICAL',
+        )
+
+    def __iter__(self):
+        for fortran_type_name in self.fortran_type_name_list:
+            yield fortran_type_name
+
+
 def main(fortran_filename):
     fortran_src = read_text_content(fortran_filename)
 
