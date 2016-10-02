@@ -187,7 +187,7 @@ class TestFortranToPythonReDeclarationLines(unittest.TestCase):
         self.maxDiff = maxDiff_backup
 
     def test_FortranVariableDeclarationsFinder(self):
-        finder = f2pr.FortranVariableDeclarationsFinder()
+        finder = f2pr.FortranVariableTypesIterator()
         type_set = set([t for t in finder])
         expected_set = set(finder.fortran_type_name_list)
 

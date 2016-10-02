@@ -96,7 +96,7 @@ def find_type_variable_names(fortran_source_txt, type_name):
     return tuple(variable_names)
 
 
-class FortranVariableDeclarationsFinder:
+class FortranVariableTypesIterator:
     def __init__(self):
         self.fortran_type_name_list = (
             'DOUBLE PRECISION',
