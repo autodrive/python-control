@@ -13,6 +13,11 @@ def read_text_content(filename):
 
 
 def replace_fortran_comments_to_python(txt):
+    """
+    replace first character of a line to '#'
+    :param txt:
+    :return:
+    """
     comment_replaced_txt = re.sub(pattern='^[^\s]', repl='#', string=txt, flags=re.MULTILINE)
     return comment_replaced_txt
 
