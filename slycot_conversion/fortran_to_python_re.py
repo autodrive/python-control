@@ -23,6 +23,11 @@ def replace_fortran_comments_to_python(txt):
 
 
 def replace_fortran_continue_to_next_line_to_python(txt):
+    """
+    if 6th character in a line is not blank, append to the prior line
+    :param txt:
+    :return:
+    """
     dollar6_replaced_txt = re.sub(pattern=r'\n\s{5}[^\s]\s+', repl=' ', string=txt, flags=re.MULTILINE)
     return dollar6_replaced_txt
 
