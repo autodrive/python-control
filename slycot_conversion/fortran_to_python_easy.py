@@ -278,9 +278,11 @@ def split_symbols(fortran_line):
 
 
 if __name__ == '__main__':
+    logger.info('start program '.ljust(60, '='))
     args = os.path.join(os.pardir, 'pyslicot', 'SB02MT.f')
     from sys import argv
 
     if 1 < len(argv):
         args = argv[1]
     main(args)
+    logger.info('end program '.ljust(60, '='))
