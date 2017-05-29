@@ -1,6 +1,6 @@
 """
 Find slycot functions directly or indirectly called in python-control
->>> python find_slycot.py [path to slycot local repository]
+Example: $ python find_slycot.py [path to python-control] [path to slycot]
 """
 import copy
 import os
