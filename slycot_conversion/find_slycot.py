@@ -323,7 +323,11 @@ def main():
 
     print("with go to ".ljust(60, '#'))
     pprint(fortran_go_to.result)
-    fortran_go_to_set = set(fortran_go_to.result.values()[0].keys())
+    # make set of fortran files with goto or go to
+    fortran_go_to_set = set()
+    for fortran_folder in fortran_go_to.result:
+        search_result = fortran_go_to.result[fortran_folder]
+        fortran_go_to_set = fortran_go_to_set.union(set(search_result.keys()))
     print("end with go to ".ljust(60, '*'))
 
     # find go to lines from Fortran source codes recursively visiting sub-folders
@@ -331,15 +335,17 @@ def main():
 
     print("with goto ".ljust(60, '#'))
     pprint(fortran_goto.result)
-    fortran_goto_set = set(fortran_goto.result.values()[0].keys())
+    # add more to set of fortran files with goto or go to
+    for fortran_folder in fortran_goto.result:
+        search_result = fortran_go_to.result[fortran_folder]
+        fortran_go_to_set = fortran_go_to_set.union(set(search_result.keys()))
     print("end with goto ".ljust(60, '*'))
 
-    fortran_go_to_set.union(fortran_goto_set)
-    print("with go to or goto ".ljust(60, '#'))
-    print(len(fortran_go_to_set))
+    print(("# fortran files with go to or goto = %d " % len(fortran_go_to_set)).ljust(60, '#'))
     for function_name in sorted(list(fortran_go_to_set)):
         print(function_name.lower()[:-2])
     print("end go to or goto ".ljust(60, '*'))
+
 
 if __name__ == '__main__':
     main()
