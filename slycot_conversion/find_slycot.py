@@ -22,41 +22,6 @@ def get_first_script_parameter():
     return os.path.abspath(result)
 
 
-def print_sorted_keys(dictionary):
-    keys = list(dictionary.keys())
-
-    def compare(a, b):
-        """
-        longer items first
-        Parameters
-        ----------
-        a
-        b
-
-        Returns
-        -------
-
-        """
-        if len(dictionary[a]) > len(dictionary[b]):
-            return -1
-        elif len(dictionary[a]) < len(dictionary[b]):
-            return 1
-        else:
-            if a > b:
-                return 1
-            elif a < b:
-                return -1
-            elif a == b:
-                return 0
-            else:
-                return None
-
-    keys.sort(cmp=compare)
-    for i, key in enumerate(keys):
-        print(i, key, len(dictionary[key]))
-        pprint(dictionary[key])
-
-
 class RecursiveFinder(object):
     """
     Search for pattern in files of given extension recursively
