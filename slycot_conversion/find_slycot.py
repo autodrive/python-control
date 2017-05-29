@@ -253,9 +253,9 @@ class FindFunctionUsedFortran(FindFunctionNamesFromImport):
         return function_name
 
 
-def main():
+def main(python_control_path, slycot_path):
     # from python import lines, find fortran function names
-    python_finder = RecursiveFinder(os.pardir)
+    python_finder = RecursiveFinder(python_control_path)
 
     python_function_finder = FindFunctionNamesFromImport(python_finder.result)
     function_names = python_function_finder.find_function_names()
@@ -265,7 +265,7 @@ def main():
     print("end imported ".ljust(60, '*'))
 
     # from fortran CALL lines, find selected fortran function names
-    fortran_finder = RecursiveFinderFortran(function_list=tuple(function_names.keys()))
+    fortran_finder = RecursiveFinderFortran(slycot_path, function_list=tuple(function_names.keys()))
 
     fortran_function_finder = FindFunctionUsedFortran(fortran_finder.result, function_names)
     fortran_function_names = fortran_function_finder.find_function_names()
@@ -274,7 +274,7 @@ def main():
     print("end called ".ljust(60, '*'))
 
     # find go to lines from Fortran source codes recursively visiting sub-folders
-    fortran_go_to = RecursiveFinderFortran(function_list=tuple(function_names.keys()), pattern='GO')
+    fortran_go_to = RecursiveFinderFortran(slycot_path, function_list=tuple(function_names.keys()), pattern='GO')
 
     print("with go to ".ljust(60, '#'))
     pprint(fortran_go_to.result)
@@ -286,7 +286,7 @@ def main():
     print("end with go to ".ljust(60, '*'))
 
     # find go to lines from Fortran source codes recursively visiting sub-folders
-    fortran_goto = RecursiveFinderFortran(function_list=tuple(function_names.keys()), pattern='GOTO')
+    fortran_goto = RecursiveFinderFortran(slycot_path, function_list=tuple(function_names.keys()), pattern='GOTO')
 
     print("with goto ".ljust(60, '#'))
     pprint(fortran_goto.result)
@@ -303,4 +303,11 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+
+    try:
+        main(sys.argv[1], sys.argv[2], )
+    except:
+        message = 'Find slycot functions directly or indirectly called in python-control\n' \
+                  'Example: $ python find_slycot.py [path to python-control] [path to slycot]'
+        print(message)
