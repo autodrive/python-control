@@ -5,6 +5,9 @@ import os
 import re
 
 import fortran_info
+import wapj_logger
+
+logger = wapj_logger.initialize_logger('f2py_easy.log')
 
 
 def read_text_content(filename):
@@ -188,6 +191,9 @@ def indent_logic(python_line_list_split, tab_stop=4):
 
     for line in python_line_list_split:
         if '#' != line[0]:
+            logger.info('indent_logic(): line : %r' % (line))
+            logger.info('indent_logic(): top : %r' % (stack))
+
             indent = next_indent
             for word in line:
                 if word in decrease_itself:
@@ -211,6 +217,7 @@ def indent_logic(python_line_list_split, tab_stop=4):
 
             format_string = '%' + str(indent) + 'd'
             line.insert(0, format_string % len(stack))
+        logger.info('indent_logic(): bottom : %r' % (stack))
     # end of indent loop
 
 
@@ -271,9 +278,11 @@ def split_symbols(fortran_line):
 
 
 if __name__ == '__main__':
+    logger.info('start program '.ljust(60, '='))
     args = os.path.join(os.pardir, 'pyslicot', 'SB02MT.f')
     from sys import argv
 
     if 1 < len(argv):
         args = argv[1]
     main(args)
+    logger.info('end program '.ljust(60, '='))
