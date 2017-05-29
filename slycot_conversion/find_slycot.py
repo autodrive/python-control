@@ -204,18 +204,19 @@ class FindFunctionUsedFortran(FindFunctionNamesFromImport):
             raise TypeError('function_names expected to be a dictionary')
 
     @staticmethod
-    def is_comment(line):
+    def is_comment(fortran_line):
         """
         If a line's first column is C, it is a comment
         Parameters
         ----------
-        line
+        fortran_line
 
         Returns
         -------
 
         """
-        return 'C' == line[1 - 1]
+        result = fortran_line[0].strip()
+        return result
 
     def handle_file(self, filename, line, line_number, path):
         """
