@@ -8,15 +8,6 @@ import re
 from pprint import pprint
 
 
-def pwd():
-    """
-    Returns
-    -------
-    absolute path to current working directory
-    """
-    return os.path.abspath(os.curdir)
-
-
 def get_first_script_parameter():
     """
     If first argument of script not given, use current directory
@@ -72,7 +63,7 @@ class RecursiveFinder(object):
     """
 
     def __init__(self, initial_path=os.curdir, extension='.py', pattern="from" + " slycot import", b_rel_path=True):
-        self.abs_return_path = pwd()
+        self.abs_return_path = os.getcwd()
         self.extension = extension
         self.pattern = pattern
 
@@ -110,7 +101,7 @@ class RecursiveFinder(object):
                     self.result[key] = folder_list
 
     def process_folder(self, root, files):
-        current_path = pwd()
+        current_path = os.getcwd()
         os.chdir(os.path.abspath(root))
 
         folder_result = {}
