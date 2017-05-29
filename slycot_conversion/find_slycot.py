@@ -1,22 +1,11 @@
 """
 Find slycot functions directly or indirectly called in python-control
->>> python find_slycot.py [path to slycot local repository]
+Example: $ python find_slycot.py [path to python-control] [path to slycot]
 """
 import copy
 import os
 import re
 from pprint import pprint
-
-import fortran_info
-
-
-def pwd():
-    """
-    Returns
-    -------
-    absolute path to current working directory
-    """
-    return os.path.abspath(os.curdir)
 
 
 def get_first_script_parameter():
@@ -33,48 +22,13 @@ def get_first_script_parameter():
     return os.path.abspath(result)
 
 
-def print_sorted_keys(dictionary):
-    keys = list(dictionary.keys())
-
-    def compare(a, b):
-        """
-        longer items first
-        Parameters
-        ----------
-        a
-        b
-
-        Returns
-        -------
-
-        """
-        if len(dictionary[a]) > len(dictionary[b]):
-            return -1
-        elif len(dictionary[a]) < len(dictionary[b]):
-            return 1
-        else:
-            if a > b:
-                return 1
-            elif a < b:
-                return -1
-            elif a == b:
-                return 0
-            else:
-                return None
-
-    keys.sort(cmp=compare)
-    for i, key in enumerate(keys):
-        print(i, key, len(dictionary[key]))
-        pprint(dictionary[key])
-
-
 class RecursiveFinder(object):
     """
     Search for pattern in files of given extension recursively
     """
 
     def __init__(self, initial_path=os.curdir, extension='.py', pattern="from" + " slycot import", b_rel_path=True):
-        self.abs_return_path = pwd()
+        self.abs_return_path = os.getcwd()
         self.extension = extension
         self.pattern = pattern
 
@@ -116,7 +70,7 @@ class RecursiveFinder(object):
                     self.result[key] = folder_list
 
     def process_folder(self, root, files):
-        current_path = pwd()
+        current_path = os.getcwd()
         os.chdir(os.path.abspath(root))
 
         folder_result = {}
@@ -134,9 +88,8 @@ class RecursiveFinder(object):
         result = []
 
         if os.path.splitext(file_name)[-1] == self.extension:
-            f = open(file_name, 'r')
-            txt = f.read()
-            f.close()
+            with open(file_name, 'r', encoding='utf8') as f:
+                txt = f.read()
 
             lines = txt.splitlines()
 
@@ -261,18 +214,19 @@ class FindFunctionUsedFortran(FindFunctionNamesFromImport):
             raise TypeError('function_names expected to be a dictionary')
 
     @staticmethod
-    def is_comment(line):
+    def is_comment(fortran_line):
         """
         If a line's first column is C, it is a comment
         Parameters
         ----------
-        line
+        fortran_line
 
         Returns
         -------
 
         """
-        return fortran_info.is_comment(line)
+        result = fortran_line[0].strip()
+        return result
 
     def handle_file(self, filename, line, line_number, path):
         """
@@ -310,9 +264,9 @@ class FindFunctionUsedFortran(FindFunctionNamesFromImport):
         return function_name
 
 
-def main():
+def main(python_control_path, slycot_path):
     # from python import lines, find fortran function names
-    python_finder = RecursiveFinder(os.pardir)
+    python_finder = RecursiveFinder(python_control_path)
 
     python_function_finder = FindFunctionNamesFromImport(python_finder.result)
     function_names = python_function_finder.find_function_names()
@@ -324,9 +278,9 @@ def main():
     print("end imported ".ljust(60, '*'))
 
     # from fortran CALL lines, find selected fortran function names
-    # find go to lines from Fortran source codes recursively visiting sub-folders
+    # find lines calling subroutines from Fortran source codes recursively visiting sub-folders
 
-    fortran_finder = RecursiveFinderFortran(function_list=function_tuple, pattern='CALL')
+    fortran_finder = RecursiveFinderFortran(slycot_path, function_list=function_tuple, pattern='CALL')
 
     fortran_function_finder = FindFunctionUsedFortran(fortran_finder.result, function_names)
     fortran_function_names = fortran_function_finder.find_function_names()
@@ -335,39 +289,40 @@ def main():
     print("end called ".ljust(60, '*'))
 
     # find go to lines from Fortran source codes recursively visiting sub-folders
-    fortran_go_to_set = find_in_tree(function_tuple, 'GO')
+    fortran_go_to_set = find_in_tree(slycot_path, function_tuple, 'GO')
 
     # find goto lines from Fortran source codes recursively visiting sub-folders
-    fortran_goto_set = find_in_tree(function_tuple, 'GOTO')
+    fortran_go_to_set = fortran_go_to_set.union(find_in_tree(slycot_path, function_tuple, 'GOTO'))
 
-    fortran_go_to_set.union(fortran_goto_set)
-    print("with go to or goto ".ljust(60, '#'))
-    print(len(fortran_go_to_set))
+    print(("# fortran files with go to or goto = %d " % len(fortran_go_to_set)).ljust(60, '#'))
     for function_name in sorted(list(fortran_go_to_set)):
         print(function_name.lower()[:-2])
     print("end go to or goto ".ljust(60, '*'))
 
-    # find goto lines from Fortran source codes recursively visiting sub-folders
-    find_in_tree(None, '\t')
 
-    # find goto lines from Fortran source codes recursively visiting sub-folders
-    find_in_tree(None, '[')
-
-
-def find_in_tree(function_tuple, pattern_string):
-    fortran_go_to = RecursiveFinderFortran(function_list=function_tuple, pattern=pattern_string)
+def find_in_tree(slycot_path, function_tuple, pattern_string):
+    fortran_go_to = RecursiveFinderFortran(slycot_path, function_list=function_tuple, pattern=pattern_string)
     print(("with %r " % pattern_string).ljust(60, '#'))
 
+    fortran_go_to_set = set()
     if fortran_go_to.result.values():
         pprint(fortran_go_to.result)
-        fortran_go_to_set = set(fortran_go_to.result.values()[0].keys())
+        for fortran_path in fortran_go_to.result:
+            search_result = fortran_go_to.result[fortran_path]
+            fortran_go_to_set = fortran_go_to_set.union(search_result.keys())
     else:
         print('%r not found' % pattern_string)
-        fortran_go_to_set = set()
 
     print(("end with %r to " % pattern_string).ljust(60, '*'))
     return fortran_go_to_set
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+
+    try:
+        main(sys.argv[1], sys.argv[2])
+    except IndexError as e:
+        message = 'Find slycot functions directly or indirectly called in python-control\n' \
+                  'Example: $ python find_slycot.py [path to python-control] [path to slycot]'
+        print(message)
