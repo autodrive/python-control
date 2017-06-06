@@ -7,7 +7,11 @@ import os
 import re
 from pprint import pprint
 
-import scipy.linalg as LA
+import numpy.linalg.lapack_lite as np_lapack_lite
+import scipy.linalg.blas as blas
+import scipy.linalg.cython_blas as cython_blas
+import scipy.linalg.cython_lapack as cython_lapack
+import scipy.linalg.lapack as lapack
 
 
 def get_first_script_parameter():
@@ -314,22 +318,25 @@ def print_md_table(fortran_function_names_dict):
    scipy.linalg.cython_lapack – Low-level LAPACK functions for Cython
    """
 
-    blas_tuple = tuple(dir(LA.blas))
-    lapack_tuple = tuple(dir(LA.lapack))
-    cython_blas_tuple = tuple(dir(LA.cython_blas))
-    cython_lapack_tuple = tuple(dir(LA.cython_lapack))
+    blas_tuple = tuple(dir(blas))
+    lapack_tuple = tuple(dir(lapack))
+    cython_blas_tuple = tuple(dir(cython_blas))
+    cython_lapack_tuple = tuple(dir(cython_lapack))
+    np_lapack_lite_tuple = tuple(dir(np_lapack_lite))
 
     for function_name in fortran_function_names_dict:
 
         lib_name = ''
-        if function_name in cython_lapack_tuple:
-            lib_name = 'cython_lapack'
+        if function_name in np_lapack_lite_tuple:
+            lib_name = 'numpy.linalg.lapack_lite'
+        elif function_name in cython_lapack_tuple:
+            lib_name = 'scipy.linalg.cython_lapack'
         elif function_name in cython_blas_tuple:
-            lib_name = 'cython_blas'
+            lib_name = 'scipy.linalg.cython_blas'
         elif function_name in lapack_tuple:
-            lib_name = 'lapack'
+            lib_name = 'scipy.linalg.lapack'
         elif function_name in blas_tuple:
-            lib_name = 'blas'
+            lib_name = 'scipy.linalg.blas'
 
         print('| %s | %s | %d | %r |' % (function_name, lib_name, len(fortran_function_names_dict[function_name]),
                                          fortran_function_names_dict[function_name]))
