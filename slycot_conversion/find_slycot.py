@@ -274,6 +274,10 @@ def main(python_control_path, slycot_path):
     # from python import lines, find fortran function names
     python_finder = RecursiveFinder(python_control_path)
 
+    slycot_fortran_file_name_set = set(
+        [os.path.splitext(filename)[0].lower() for filename in os.listdir(os.path.join(slycot_path, 'slycot', 'src')) if
+         '.f' == os.path.splitext(filename)[-1]])
+
     python_function_finder = FindFunctionNamesFromImport(python_finder.result)
     function_names = python_function_finder.find_function_names()
 
@@ -291,7 +295,7 @@ def main(python_control_path, slycot_path):
     fortran_function_finder = FindFunctionUsedFortran(fortran_finder.result, function_names)
     fortran_call_dict = fortran_function_finder.find_function_names()
     print("called ".ljust(60, '#'))
-    print_md_table(fortran_call_dict, function_name_set)
+    print_md_table(fortran_call_dict, function_name_set, slycot_fortran_file_name_set)
     print("end called ".ljust(60, '*'))
 
     # find go to lines from Fortran source codes recursively visiting sub-folders
@@ -306,7 +310,7 @@ def main(python_control_path, slycot_path):
     print("end go to or goto ".ljust(60, '*'))
 
 
-def print_md_table(call_info_dict, slycot_pyctrl_set):
+def print_md_table(call_info_dict, slycot_pyctrl_set, slycot_fortran_file_name_set):
     print("| function names (%d) | library | # calls | call locations |" % len(call_info_dict))
     print("|:----------------:|:----------:|:------:|:--------------:|")
 
@@ -331,6 +335,8 @@ def print_md_table(call_info_dict, slycot_pyctrl_set):
         lib_name = ''
         if function_name in slycot_pyctrl_set:
             lib_name = 'slycot(d)'
+        elif function_name in slycot_fortran_file_name_set:
+            lib_name = 'slycot(i)'
         elif function_name in np_lapack_lite_set:
             lib_name = 'numpy.linalg.lapack_lite'
         elif function_name in cython_lapack_set:
