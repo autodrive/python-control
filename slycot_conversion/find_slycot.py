@@ -7,6 +7,12 @@ import os
 import re
 from pprint import pprint
 
+import numpy.linalg.lapack_lite as np_lapack_lite
+import scipy.linalg.blas as blas
+import scipy.linalg.cython_blas as cython_blas
+import scipy.linalg.cython_lapack as cython_lapack
+import scipy.linalg.lapack as lapack
+
 
 def get_first_script_parameter():
     """
@@ -36,6 +42,8 @@ class RecursiveFinder(object):
 
         abs_initial_path = os.path.abspath(initial_path)
         self.b_rel_path = b_rel_path
+
+        self.ignore_if_folder_parts_include = ('.git', '.idea', 'build', 'slycot_conversion')
 
         if not os.path.exists(abs_initial_path):
             raise IOError('File does not exist: %s' % abs_initial_path)
@@ -127,7 +135,7 @@ class RecursiveFinderFortran(RecursiveFinder):
         function_name = os.path.splitext(file_name)[0].lower()
 
         # if self.function_list is empty or function_name is in self.function_list
-        if (not self.function_list) or (function_name in self.function_list):
+        if function_name in self.function_list:
             result = RecursiveFinder.process_file(self, path=path, file_name=file_name)
 
         return result
@@ -266,10 +274,14 @@ def main(python_control_path, slycot_path):
     # from python import lines, find fortran function names
     python_finder = RecursiveFinder(python_control_path)
 
+    slycot_fortran_file_name_set = set(
+        [os.path.splitext(filename)[0].lower() for filename in os.listdir(os.path.join(slycot_path, 'slycot', 'src')) if
+         '.f' == os.path.splitext(filename)[-1]])
+
     python_function_finder = FindFunctionNamesFromImport(python_finder.result)
     function_names = python_function_finder.find_function_names()
 
-    function_tuple = tuple(function_names.keys())
+    function_name_set = set(function_names.keys())
 
     print("imported ".ljust(60, '#'))
     pprint(function_names)
@@ -277,25 +289,70 @@ def main(python_control_path, slycot_path):
 
     # from fortran CALL lines, find selected fortran function names
     # find lines calling subroutines from Fortran source codes recursively visiting sub-folders
-    fortran_finder = RecursiveFinderFortran(slycot_path, function_list=function_tuple, pattern='CALL')
+
+    fortran_finder = RecursiveFinderFortran(slycot_path, function_list=function_name_set, pattern='CALL')
 
     fortran_function_finder = FindFunctionUsedFortran(fortran_finder.result, function_names)
-    fortran_function_names = fortran_function_finder.find_function_names()
+    fortran_call_dict = fortran_function_finder.find_function_names()
     print("called ".ljust(60, '#'))
-    pprint(fortran_function_names)
+    print_md_table(fortran_call_dict, function_name_set, slycot_fortran_file_name_set)
     print("end called ".ljust(60, '*'))
 
     # find go to lines from Fortran source codes recursively visiting sub-folders
-    fortran_go_to_set = find_in_tree(slycot_path, function_tuple, 'GO')
+    fortran_go_to_set = find_in_tree(slycot_path, function_name_set, 'GO')
 
     # find goto lines from Fortran source codes recursively visiting sub-folders
-    fortran_goto_set = find_in_tree(slycot_path, function_tuple, 'GOTO')
+    fortran_go_to_set = fortran_go_to_set.union(find_in_tree(slycot_path, function_name_set, 'GOTO'))
 
-    fortran_go_to_set.union(fortran_goto_set)
     print(("# fortran files with go to or goto = %d " % len(fortran_go_to_set)).ljust(60, '#'))
     for function_name in sorted(list(fortran_go_to_set)):
         print(function_name.lower()[:-2])
     print("end go to or goto ".ljust(60, '*'))
+
+
+def print_md_table(call_info_dict, slycot_pyctrl_set, slycot_fortran_file_name_set):
+    print("| function names (%d) | library | # calls | call locations |" % len(call_info_dict))
+    print("|:----------------:|:----------:|:------:|:--------------:|")
+
+    """
+   scipy.linalg.blas – Low-level BLAS functions
+   scipy.linalg.lapack – Low-level LAPACK functions
+   scipy.linalg.cython_blas – Low-level BLAS functions for Cython
+   scipy.linalg.cython_lapack – Low-level LAPACK functions for Cython
+   """
+
+    blas_set = set(dir(blas))
+    lapack_set = set(dir(lapack))
+    cython_blas_set = set(cython_blas.__pyx_capi__.keys())
+    cython_lapack_set = set(cython_lapack.__pyx_capi__.keys())
+    np_lapack_lite_set = set(dir(np_lapack_lite))
+
+    function_name_list = list(call_info_dict.keys())
+    function_name_list.sort()
+    function_name_list.sort(key=lambda x: len(call_info_dict[x]), reverse=True)
+
+    for function_name in function_name_list:
+
+        lib_name = ''
+        if function_name in slycot_pyctrl_set:
+            lib_name = 'slycot(d)'
+        elif function_name in slycot_fortran_file_name_set:
+            lib_name = 'slycot(i)'
+        elif function_name in np_lapack_lite_set:
+            lib_name = 'numpy.linalg.lapack_lite'
+        elif function_name in cython_lapack_set:
+            lib_name = 'scipy.linalg.cython_lapack'
+        elif function_name in cython_blas_set:
+            lib_name = 'scipy.linalg.cython_blas'
+        elif function_name in lapack_set:
+            lib_name = 'scipy.linalg.lapack'
+        elif function_name in blas_set:
+            lib_name = 'scipy.linalg.blas'
+
+        call_record_list = [str(call_record_set) for call_record_set in call_info_dict[function_name]]
+
+        print('| %s | %s | %d | %s |' % (function_name, lib_name, len(call_info_dict[function_name]),
+                                         '<br>'.join(call_record_list)))
 
 
 def find_in_tree(slycot_path, function_tuple, pattern_string):
