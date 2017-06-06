@@ -286,6 +286,7 @@ def main(python_control_path, slycot_path):
     fortran_function_names = fortran_function_finder.find_function_names()
     print("called ".ljust(60, '#'))
     pprint(fortran_function_names)
+    print_md_table(fortran_function_names)
     print("end called ".ljust(60, '*'))
 
     # find go to lines from Fortran source codes recursively visiting sub-folders
@@ -298,6 +299,14 @@ def main(python_control_path, slycot_path):
     for function_name in sorted(list(fortran_go_to_set)):
         print(function_name.lower()[:-2])
     print("end go to or goto ".ljust(60, '*'))
+
+
+def print_md_table(fortran_function_names_dict):
+    print("| fortran function | # calls | call locations |")
+    print("|:----------------:|:-------:|:--------------:|")
+    for function_name in fortran_function_names_dict:
+        print('| %s | %d | %r |' % (
+            function_name, len(fortran_function_names_dict[function_name]), fortran_function_names_dict[function_name]))
 
 
 def find_in_tree(slycot_path, function_tuple, pattern_string):
