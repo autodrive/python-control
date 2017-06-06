@@ -328,6 +328,7 @@ def print_md_table(call_info_dict, slycot_pyctrl_set, slycot_fortran_file_name_s
     np_lapack_lite_set = set(dir(np_lapack_lite))
 
     function_name_list = list(call_info_dict.keys())
+    function_name_list.sort()
     function_name_list.sort(key=lambda x: len(call_info_dict[x]), reverse=True)
 
     for function_name in function_name_list:
