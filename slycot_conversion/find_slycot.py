@@ -317,11 +317,11 @@ def print_md_table(call_info_dict, slycot_pyctrl_set):
    scipy.linalg.cython_lapack – Low-level LAPACK functions for Cython
    """
 
-    blas_tuple = tuple(dir(blas))
-    lapack_tuple = tuple(dir(lapack))
-    cython_blas_tuple = tuple(dir(cython_blas))
-    cython_lapack_tuple = tuple(dir(cython_lapack))
-    np_lapack_lite_tuple = tuple(dir(np_lapack_lite))
+    blas_set = set(dir(blas))
+    lapack_set = set(dir(lapack))
+    cython_blas_set = set(cython_blas.__pyx_capi__.keys())
+    cython_lapack_set = set(cython_lapack.__pyx_capi__.keys())
+    np_lapack_lite_set = set(dir(np_lapack_lite))
 
     function_name_list = list(call_info_dict.keys())
     function_name_list.sort(key=lambda x: len(call_info_dict[x]), reverse=True)
@@ -331,18 +331,18 @@ def print_md_table(call_info_dict, slycot_pyctrl_set):
         lib_name = ''
         if function_name in slycot_pyctrl_set:
             lib_name = 'slycot(d)'
-        elif function_name in np_lapack_lite_tuple:
+        elif function_name in np_lapack_lite_set:
             lib_name = 'numpy.linalg.lapack_lite'
-        elif function_name in cython_lapack_tuple:
+        elif function_name in cython_lapack_set:
             lib_name = 'scipy.linalg.cython_lapack'
-        elif function_name in cython_blas_tuple:
+        elif function_name in cython_blas_set:
             lib_name = 'scipy.linalg.cython_blas'
-        elif function_name in lapack_tuple:
+        elif function_name in lapack_set:
             lib_name = 'scipy.linalg.lapack'
-        elif function_name in blas_tuple:
+        elif function_name in blas_set:
             lib_name = 'scipy.linalg.blas'
 
-        call_record_list = [str(call_record_tuple) for call_record_tuple in call_info_dict[function_name]]
+        call_record_list = [str(call_record_set) for call_record_set in call_info_dict[function_name]]
 
         print('| %s | %s | %d | %s |' % (function_name, lib_name, len(call_info_dict[function_name]),
                                          '<br>'.join(call_record_list)))
