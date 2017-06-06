@@ -302,7 +302,7 @@ def main(python_control_path, slycot_path):
 
 
 def print_md_table(fortran_function_names_dict):
-    print("| fortran function | # calls | call locations |")
+    print("| function names (%d) | # calls | call locations |" % len(fortran_function_names_dict))
     print("|:----------------:|:-------:|:--------------:|")
     for function_name in fortran_function_names_dict:
         print('| %s | %d | %r |' % (
