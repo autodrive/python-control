@@ -289,10 +289,11 @@ def main(python_control_path, slycot_path):
     fortran_finder = RecursiveFinderFortran(slycot_path, function_list=function_tuple, pattern='CALL')
 
     fortran_function_finder = FindFunctionUsedFortran(fortran_finder.result, function_names)
-    fortran_function_names = fortran_function_finder.find_function_names()
+    slycot_pyctrl_set = set(
+        [f_file_name.strip('.f').lower() for f_file_name in fortran_function_finder.finder_result_dict['slycot\\src']])
+    fortran_call_dict = fortran_function_finder.find_function_names()
     print("called ".ljust(60, '#'))
-    pprint(fortran_function_names)
-    print_md_table(fortran_function_names)
+    print_md_table(fortran_call_dict, slycot_pyctrl_set)
     print("end called ".ljust(60, '*'))
 
     # find go to lines from Fortran source codes recursively visiting sub-folders
@@ -307,8 +308,8 @@ def main(python_control_path, slycot_path):
     print("end go to or goto ".ljust(60, '*'))
 
 
-def print_md_table(fortran_function_names_dict):
-    print("| function names (%d) | library | # calls | call locations |" % len(fortran_function_names_dict))
+def print_md_table(call_info_dict, slycot_pyctrl_set):
+    print("| function names (%d) | library | # calls | call locations |" % len(call_info_dict))
     print("|:----------------:|:----------:|:------:|:--------------:|")
 
     """
@@ -324,10 +325,12 @@ def print_md_table(fortran_function_names_dict):
     cython_lapack_tuple = tuple(dir(cython_lapack))
     np_lapack_lite_tuple = tuple(dir(np_lapack_lite))
 
-    for function_name in fortran_function_names_dict:
+    for function_name in call_info_dict:
 
         lib_name = ''
-        if function_name in np_lapack_lite_tuple:
+        if function_name in slycot_pyctrl_set:
+            lib_name = 'slycot(d)'
+        elif function_name in np_lapack_lite_tuple:
             lib_name = 'numpy.linalg.lapack_lite'
         elif function_name in cython_lapack_tuple:
             lib_name = 'scipy.linalg.cython_lapack'
@@ -338,9 +341,9 @@ def print_md_table(fortran_function_names_dict):
         elif function_name in blas_tuple:
             lib_name = 'scipy.linalg.blas'
 
-        call_record_list = [str(call_record_tuple) for call_record_tuple in fortran_function_names_dict[function_name]]
+        call_record_list = [str(call_record_tuple) for call_record_tuple in call_info_dict[function_name]]
 
-        print('| %s | %s | %d | %s |' % (function_name, lib_name, len(fortran_function_names_dict[function_name]),
+        print('| %s | %s | %d | %s |' % (function_name, lib_name, len(call_info_dict[function_name]),
                                          '<br>'.join(call_record_list)))
 
 
