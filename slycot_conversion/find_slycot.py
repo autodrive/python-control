@@ -323,7 +323,10 @@ def print_md_table(call_info_dict, slycot_pyctrl_set):
     cython_lapack_tuple = tuple(dir(cython_lapack))
     np_lapack_lite_tuple = tuple(dir(np_lapack_lite))
 
-    for function_name in call_info_dict:
+    function_name_list = list(call_info_dict.keys())
+    function_name_list.sort(key=lambda x: len(call_info_dict[x]), reverse=True)
+
+    for function_name in function_name_list:
 
         lib_name = ''
         if function_name in slycot_pyctrl_set:
