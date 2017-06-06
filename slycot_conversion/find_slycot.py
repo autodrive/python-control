@@ -7,6 +7,8 @@ import os
 import re
 from pprint import pprint
 
+import scipy.linalg as LA
+
 
 def get_first_script_parameter():
     """
@@ -302,11 +304,35 @@ def main(python_control_path, slycot_path):
 
 
 def print_md_table(fortran_function_names_dict):
-    print("| function names (%d) | # calls | call locations |" % len(fortran_function_names_dict))
-    print("|:----------------:|:-------:|:--------------:|")
+    print("| function names (%d) | library | # calls | call locations |" % len(fortran_function_names_dict))
+    print("|:----------------:|:----------:|:------:|:--------------:|")
+
+    """
+   scipy.linalg.blas – Low-level BLAS functions
+   scipy.linalg.lapack – Low-level LAPACK functions
+   scipy.linalg.cython_blas – Low-level BLAS functions for Cython
+   scipy.linalg.cython_lapack – Low-level LAPACK functions for Cython
+   """
+
+    blas_tuple = tuple(dir(LA.blas))
+    lapack_tuple = tuple(dir(LA.lapack))
+    cython_blas_tuple = tuple(dir(LA.cython_blas))
+    cython_lapack_tuple = tuple(dir(LA.cython_lapack))
+
     for function_name in fortran_function_names_dict:
-        print('| %s | %d | %r |' % (
-            function_name, len(fortran_function_names_dict[function_name]), fortran_function_names_dict[function_name]))
+
+        lib_name = ''
+        if function_name in cython_lapack_tuple:
+            lib_name = 'cython_lapack'
+        elif function_name in cython_blas_tuple:
+            lib_name = 'cython_blas'
+        elif function_name in lapack_tuple:
+            lib_name = 'lapack'
+        elif function_name in blas_tuple:
+            lib_name = 'blas'
+
+        print('| %s | %s | %d | %r |' % (function_name, lib_name, len(fortran_function_names_dict[function_name]),
+                                         fortran_function_names_dict[function_name]))
 
 
 def find_in_tree(slycot_path, function_tuple, pattern_string):
