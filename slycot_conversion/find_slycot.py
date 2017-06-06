@@ -277,7 +277,7 @@ def main(python_control_path, slycot_path):
     python_function_finder = FindFunctionNamesFromImport(python_finder.result)
     function_names = python_function_finder.find_function_names()
 
-    function_tuple = tuple(function_names.keys())
+    function_name_set = set(function_names.keys())
 
     print("imported ".ljust(60, '#'))
     pprint(function_names)
@@ -286,21 +286,19 @@ def main(python_control_path, slycot_path):
     # from fortran CALL lines, find selected fortran function names
     # find lines calling subroutines from Fortran source codes recursively visiting sub-folders
 
-    fortran_finder = RecursiveFinderFortran(slycot_path, function_list=function_tuple, pattern='CALL')
+    fortran_finder = RecursiveFinderFortran(slycot_path, function_list=function_name_set, pattern='CALL')
 
     fortran_function_finder = FindFunctionUsedFortran(fortran_finder.result, function_names)
-    slycot_pyctrl_set = set(
-        [f_file_name.strip('.f').lower() for f_file_name in fortran_function_finder.finder_result_dict['slycot\\src']])
     fortran_call_dict = fortran_function_finder.find_function_names()
     print("called ".ljust(60, '#'))
-    print_md_table(fortran_call_dict, slycot_pyctrl_set)
+    print_md_table(fortran_call_dict, function_name_set)
     print("end called ".ljust(60, '*'))
 
     # find go to lines from Fortran source codes recursively visiting sub-folders
-    fortran_go_to_set = find_in_tree(slycot_path, function_tuple, 'GO')
+    fortran_go_to_set = find_in_tree(slycot_path, function_name_set, 'GO')
 
     # find goto lines from Fortran source codes recursively visiting sub-folders
-    fortran_go_to_set = fortran_go_to_set.union(find_in_tree(slycot_path, function_tuple, 'GOTO'))
+    fortran_go_to_set = fortran_go_to_set.union(find_in_tree(slycot_path, function_name_set, 'GOTO'))
 
     print(("# fortran files with go to or goto = %d " % len(fortran_go_to_set)).ljust(60, '#'))
     for function_name in sorted(list(fortran_go_to_set)):
