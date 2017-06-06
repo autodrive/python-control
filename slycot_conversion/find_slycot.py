@@ -135,7 +135,7 @@ class RecursiveFinderFortran(RecursiveFinder):
         function_name = os.path.splitext(file_name)[0].lower()
 
         # if self.function_list is empty or function_name is in self.function_list
-        if (not self.function_list) or (function_name in self.function_list):
+        if function_name in self.function_list:
             result = RecursiveFinder.process_file(self, path=path, file_name=file_name)
 
         return result
