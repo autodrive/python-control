@@ -338,8 +338,10 @@ def print_md_table(fortran_function_names_dict):
         elif function_name in blas_tuple:
             lib_name = 'scipy.linalg.blas'
 
-        print('| %s | %s | %d | %r |' % (function_name, lib_name, len(fortran_function_names_dict[function_name]),
-                                         fortran_function_names_dict[function_name]))
+        call_record_list = [str(call_record_tuple) for call_record_tuple in fortran_function_names_dict[function_name]]
+
+        print('| %s | %s | %d | %s |' % (function_name, lib_name, len(fortran_function_names_dict[function_name]),
+                                         '<br>'.join(call_record_list)))
 
 
 def find_in_tree(slycot_path, function_tuple, pattern_string):
