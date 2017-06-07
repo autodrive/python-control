@@ -145,7 +145,7 @@ class RecursiveFinderFortran(RecursiveFinder):
         else:
             self.function_list = function_list
 
-        RecursiveFinder.__init__(self, initial_path=initial_path, extension=extension, pattern=pattern)
+        super(RecursiveFinderFortran, self).__init__(initial_path=initial_path, extension=extension, pattern=pattern)
 
     def process_file(self, path, file_name):
         """
