@@ -117,12 +117,12 @@ class RecursiveFinder(object):
         result = []
 
         # if file extension correct
-        if os.path.splitext(file_name)[-1] == self.extension:
+        if os.path.splitext(file_name)[-1] != self.extension:
+            result = []
+        else:
             # read file
             with open(file_name, 'r', encoding='utf8') as f:
-                txt = f.read()
-
-            lines = txt.splitlines()
+                lines = f.readlines()
 
             # line loop
             for k, line in enumerate(lines):
