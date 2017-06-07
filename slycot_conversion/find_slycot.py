@@ -103,14 +103,28 @@ class RecursiveFinder(object):
         return folder_result
 
     def process_file(self, path, file_name):
+        """
+        
+        Parameters
+        ----------
+        path
+        file_name
+
+        Returns
+        -------
+        [(line number, text line including self.pattern), ...] 
+        """
         result = []
 
+        # if file extension correct
         if os.path.splitext(file_name)[-1] == self.extension:
+            # read file
             with open(file_name, 'r', encoding='utf8') as f:
                 txt = f.read()
 
             lines = txt.splitlines()
 
+            # line loop
             for k, line in enumerate(lines):
 
                 if self.pattern in line:
