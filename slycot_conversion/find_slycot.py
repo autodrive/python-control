@@ -41,7 +41,7 @@ class RecursiveFinder(object):
         self.result = {}
 
         abs_initial_path = os.path.abspath(initial_path)
-        self.b_rel_path = b_rel_path
+        self.b_rel_path_key = b_rel_path
 
         self.ignore_if_folder_parts_include_set = {'.git', '.idea', 'build', 'slycot_conversion'}
 
@@ -65,12 +65,20 @@ class RecursiveFinder(object):
         return any(check_list)
 
     def walker(self):
+        """
+        Recursively visit folders under root
+        Process folder if not to be ignored
+        
+        Returns
+        -------
+
+        """
         for path, dirs, files in os.walk(self.abs_initial_path):
             # if not in ignore
             if not self.is_path_to_ignore(path):
                 folder_list = self.process_folder(path, files)
                 if folder_list:
-                    if self.b_rel_path:
+                    if self.b_rel_path_key:
                         key = os.path.relpath(path, self.abs_initial_path)
                     else:
                         key = path
@@ -133,15 +141,16 @@ class RecursiveFinderFortran(RecursiveFinder):
     def __init__(self, initial_path=get_first_script_parameter(), extension='.f', pattern="CALL", function_list=None):
 
         if function_list is None:
-            self.function_list = []
+            self.b_gotta_catch_em_all = True
         else:
+            self.b_gotta_catch_em_all = False
             self.function_list = function_list
 
-        RecursiveFinder.__init__(self, initial_path=initial_path, extension=extension, pattern=pattern)
+        super(RecursiveFinderFortran, self).__init__(initial_path=initial_path, extension=extension, pattern=pattern)
 
     def process_file(self, path, file_name):
         """
-        Process the file if in the list
+        Process the file if in the function list
         Parameters
         ----------
         path
@@ -156,7 +165,7 @@ class RecursiveFinderFortran(RecursiveFinder):
         function_name = os.path.splitext(file_name)[0].lower()
 
         # if self.function_list is empty or function_name is in self.function_list
-        if function_name in self.function_list:
+        if self.b_gotta_catch_em_all or (function_name in self.function_list):
             result = RecursiveFinder.process_file(self, path=path, file_name=file_name)
 
         return result
