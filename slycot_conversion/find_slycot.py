@@ -77,6 +77,17 @@ class RecursiveFinder(object):
                     self.result[key] = folder_list
 
     def process_folder(self, folder, files):
+        """
+        
+        Parameters
+        ----------
+        folder path string
+        files an iterable containing filenames in folder
+
+        Returns
+        -------
+        {file_name: [process_file() result], ...}
+        """
         current_path = os.getcwd()
         os.chdir(os.path.abspath(folder))
 
