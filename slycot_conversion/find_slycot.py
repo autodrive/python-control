@@ -43,7 +43,7 @@ class RecursiveFinder(object):
         abs_initial_path = os.path.abspath(initial_path)
         self.b_rel_path = b_rel_path
 
-        self.ignore_if_folder_parts_include = ('.git', '.idea', 'build', 'slycot_conversion')
+        self.ignore_if_folder_parts_include_set = {'.git', '.idea', 'build', 'slycot_conversion'}
 
         if not os.path.exists(abs_initial_path):
             raise IOError('File does not exist: %s' % abs_initial_path)
@@ -61,11 +61,12 @@ class RecursiveFinder(object):
     def is_path_to_ignore(self, path):
         path_parts = path.split(os.sep)
         check_list = map(lambda folder_part_to_ignore: folder_part_to_ignore in path_parts,
-                         self.ignore_if_folder_parts_include)
+                         self.ignore_if_folder_parts_include_set)
         return any(check_list)
 
     def walker(self):
         for path, dirs, files in os.walk(self.abs_initial_path):
+            # if not in ignore
             if not self.is_path_to_ignore(path):
                 folder_list = self.process_folder(path, files)
                 if folder_list:
