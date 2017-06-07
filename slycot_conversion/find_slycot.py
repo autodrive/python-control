@@ -114,7 +114,6 @@ class RecursiveFinder(object):
         -------
         [(line number, text line including self.pattern), ...] 
         """
-        result = []
 
         # if file extension correct
         if os.path.splitext(file_name)[-1] != self.extension:
@@ -124,12 +123,8 @@ class RecursiveFinder(object):
             with open(file_name, 'r', encoding='utf8') as f:
                 lines = f.readlines()
 
-            # line loop
-            for k, line in enumerate(lines):
-
-                if self.pattern in line:
-                    # print file_name, k, ':', line
-                    result.append((k, line))
+            # collect line number and line text including the pattern
+            result = [(line_number, line_text) for line_number, line_text in enumerate(lines) if self.pattern in line_text]
 
         return result
 
