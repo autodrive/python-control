@@ -149,7 +149,7 @@ class RecursiveFinderFortran(RecursiveFinder):
 
     def process_file(self, path, file_name):
         """
-        Process the file if in the list
+        Process the file if in the function list
         Parameters
         ----------
         path
