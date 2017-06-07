@@ -76,14 +76,14 @@ class RecursiveFinder(object):
                         key = path
                     self.result[key] = folder_list
 
-    def process_folder(self, root, files):
+    def process_folder(self, folder, files):
         current_path = os.getcwd()
-        os.chdir(os.path.abspath(root))
+        os.chdir(os.path.abspath(folder))
 
         folder_result = {}
 
         for file_name in files:
-            file_result = self.process_file(root, file_name)
+            file_result = self.process_file(folder, file_name)
             if file_result:
                 folder_result[file_name] = file_result
 
