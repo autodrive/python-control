@@ -43,7 +43,7 @@ class RecursiveFinder(object):
         abs_initial_path = os.path.abspath(initial_path)
         self.b_rel_path = b_rel_path
 
-        self.ignore_if_folder_parts_include = ('.git', '.idea', 'build', 'slycot_conversion')
+        self.ignore_if_folder_parts_include_set = {'.git', '.idea', 'build', 'slycot_conversion'}
 
         if not os.path.exists(abs_initial_path):
             raise IOError('File does not exist: %s' % abs_initial_path)
@@ -61,11 +61,12 @@ class RecursiveFinder(object):
     def is_path_to_ignore(self, path):
         path_parts = path.split(os.sep)
         check_list = map(lambda folder_part_to_ignore: folder_part_to_ignore in path_parts,
-                         self.ignore_if_folder_parts_include)
+                         self.ignore_if_folder_parts_include_set)
         return any(check_list)
 
     def walker(self):
         for path, dirs, files in os.walk(self.abs_initial_path):
+            # if not in ignore
             if not self.is_path_to_ignore(path):
                 folder_list = self.process_folder(path, files)
                 if folder_list:
@@ -75,14 +76,25 @@ class RecursiveFinder(object):
                         key = path
                     self.result[key] = folder_list
 
-    def process_folder(self, root, files):
+    def process_folder(self, folder, files):
+        """
+        
+        Parameters
+        ----------
+        folder path string
+        files an iterable containing filenames in folder
+
+        Returns
+        -------
+        {file_name: [process_file() result], ...}
+        """
         current_path = os.getcwd()
-        os.chdir(os.path.abspath(root))
+        os.chdir(os.path.abspath(folder))
 
         folder_result = {}
 
         for file_name in files:
-            file_result = self.process_file(root, file_name)
+            file_result = self.process_file(folder, file_name)
             if file_result:
                 folder_result[file_name] = file_result
 
@@ -91,19 +103,28 @@ class RecursiveFinder(object):
         return folder_result
 
     def process_file(self, path, file_name):
-        result = []
+        """
+        
+        Parameters
+        ----------
+        path
+        file_name
 
-        if os.path.splitext(file_name)[-1] == self.extension:
+        Returns
+        -------
+        [(line number, text line including self.pattern), ...] 
+        """
+
+        # if file extension correct
+        if os.path.splitext(file_name)[-1] != self.extension:
+            result = []
+        else:
+            # read file
             with open(file_name, 'r', encoding='utf8') as f:
-                txt = f.read()
+                lines = f.readlines()
 
-            lines = txt.splitlines()
-
-            for k, line in enumerate(lines):
-
-                if self.pattern in line:
-                    # print file_name, k, ':', line
-                    result.append((k, line))
+            # collect line number and line text including the pattern
+            result = [(line_number, line_text) for line_number, line_text in enumerate(lines) if self.pattern in line_text]
 
         return result
 
