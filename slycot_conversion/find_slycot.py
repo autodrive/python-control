@@ -141,8 +141,9 @@ class RecursiveFinderFortran(RecursiveFinder):
     def __init__(self, initial_path=get_first_script_parameter(), extension='.f', pattern="CALL", function_list=None):
 
         if function_list is None:
-            self.function_list = []
+            self.b_gotta_catch_em_all = True
         else:
+            self.b_gotta_catch_em_all = False
             self.function_list = function_list
 
         super(RecursiveFinderFortran, self).__init__(initial_path=initial_path, extension=extension, pattern=pattern)
@@ -164,7 +165,7 @@ class RecursiveFinderFortran(RecursiveFinder):
         function_name = os.path.splitext(file_name)[0].lower()
 
         # if self.function_list is empty or function_name is in self.function_list
-        if function_name in self.function_list:
+        if self.b_gotta_catch_em_all or (function_name in self.function_list):
             result = RecursiveFinder.process_file(self, path=path, file_name=file_name)
 
         return result
