@@ -41,7 +41,7 @@ class RecursiveFinder(object):
         self.result = {}
 
         abs_initial_path = os.path.abspath(initial_path)
-        self.b_rel_path = b_rel_path
+        self.b_rel_path_key = b_rel_path
 
         self.ignore_if_folder_parts_include_set = {'.git', '.idea', 'build', 'slycot_conversion'}
 
@@ -78,7 +78,7 @@ class RecursiveFinder(object):
             if not self.is_path_to_ignore(path):
                 folder_list = self.process_folder(path, files)
                 if folder_list:
-                    if self.b_rel_path:
+                    if self.b_rel_path_key:
                         key = os.path.relpath(path, self.abs_initial_path)
                     else:
                         key = path
