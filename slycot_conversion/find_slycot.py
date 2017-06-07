@@ -65,6 +65,14 @@ class RecursiveFinder(object):
         return any(check_list)
 
     def walker(self):
+        """
+        Recursively visit folders under root
+        Process folder if not to be ignored
+        
+        Returns
+        -------
+
+        """
         for path, dirs, files in os.walk(self.abs_initial_path):
             # if not in ignore
             if not self.is_path_to_ignore(path):
