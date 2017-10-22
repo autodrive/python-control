@@ -1,0 +1,10 @@
+# https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#templating-with-jinja
+
+{% set data = load_setup_py_data() %}
+
+package:
+  name: python-control
+  version: {{ data.get('version') }}
+
+source:
+  git_url: ../
