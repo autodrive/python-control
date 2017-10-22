@@ -14,11 +14,11 @@ build:
 
 requirements:
   build:
-    - python
+    - python {{ python }}
     - nose
 
   run:
-    - python
+    - python {{ python }}
     - numpy
     - scipy
     - matplotlib
@@ -35,3 +35,7 @@ about:
 # See
 # http://docs.continuum.io/conda/build.html for
 # more information about meta.yaml
+
+# Also see
+# https://conda.io/docs/user-guide/tasks/build-packages/variants.html for
+# updates after conda_build > 3.0
