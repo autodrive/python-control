@@ -34,9 +34,16 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
 
     def test_main_python(self):
         pardir = os.path.abspath(os.path.join(os.pardir, os.pardir))
+
+        # check if path exists
+        self.assertTrue(os.path.exists(pardir), msg='Target path does not exist')
+
         r = slycot_conversion.find_slycot.RecursiveFinder(pardir)
         f = slycot_conversion.find_slycot.FindFunctionNamesFromImport(r.result)
         result = f.find_function_names()
+
+        self.assertTrue(result, msg='Result dictionary empty')
+
         expected = {'ab09ad': [('control', 'modelsimp.py', 260)],
                     'sb01bd': [('control', 'statefbk.py', 76)],
                     'sb02md': [('control', 'statefbk.py', 192),
