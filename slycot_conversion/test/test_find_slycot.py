@@ -79,10 +79,13 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
         self.assertSetEqual(expected_key_set, result_key_set)
 
         for key in expected_key_set:
+            expected_set = set(expected[key])
+            result_set = set(result[key])
+
             message = "\nkey = %s\n" \
                 "expected = %r\n" \
-                "result = %r" % (key, expected[key], result[key])
-            self.assertSetEqual(set(expected[key]), set(result[key]), message)
+                      "result = %r" % (key, expected_set, result_set)
+            self.assertSetEqual(expected_set, result_set, message)
 
     def test_find_function_names_from_import(self):
         arg_result_tuple = (
