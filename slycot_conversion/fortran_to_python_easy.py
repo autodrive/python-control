@@ -4,8 +4,8 @@ convert fortran file to python if there is no go to
 import os
 import re
 
-import fortran_info
 import wapj_logger
+from . import fortran_info
 
 logger = wapj_logger.initialize_logger('f2py_easy.log')
 
