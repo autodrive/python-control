@@ -82,7 +82,7 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
             message = "\nkey = %s\n" \
                 "expected = %r\n" \
                 "result = %r" % (key, expected[key], result[key])
-            self.assertSequenceEqual(set(expected[key]), set(result[key]), message)
+            self.assertSetEqual(set(expected[key]), set(result[key]), message)
 
     def test_find_function_names_from_import(self):
         arg_result_tuple = (
