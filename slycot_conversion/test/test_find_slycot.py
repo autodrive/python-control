@@ -33,7 +33,11 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
         self.f = slycot_conversion.find_slycot.FindFunctionNamesFromImport(self.result_dict)
 
     def test_main_python(self):
-        pardir = os.path.abspath(os.path.join(os.pardir, os.pardir))
+        curdir_list = os.path.split(os.path.abspath(os.curdir))
+
+        while curdir_list and ('python-control' != curdir_list[-1]):
+            curdir_list.pop()
+        pardir = os.path.join(*curdir_list)
 
         # check if path exists
         self.assertTrue(os.path.exists(pardir), msg='Target path does not exist')
