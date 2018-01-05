@@ -38,6 +38,13 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
         # check if path exists
         self.assertTrue(os.path.exists(pardir), msg='Target path does not exist')
 
+        # contents of the path
+        items_set = set(os.listdir(pardir))
+
+        # check if pardir has correct items
+        self.assertIn('control', items_set)
+        self.assertIn('doc', items_set)
+
         r = slycot_conversion.find_slycot.RecursiveFinder(pardir)
         f = slycot_conversion.find_slycot.FindFunctionNamesFromImport(r.result)
         result = f.find_function_names()
