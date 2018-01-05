@@ -10,8 +10,8 @@ cache:
 
 python:
   - "3.6"
-  - "3.5"
-  - "2.7"
+#  - "3.5"
+#  - "2.7"
 
 # Test against multiple version of SciPy, with and without slycot
 #
@@ -21,8 +21,8 @@ python:
 # We also want to test with and without slycot
 env:
   - SCIPY=scipy SLYCOT=slycot		# default, with slycot
-  - SCIPY=scipy SLYCOT=			# default, w/out slycot
-  - SCIPY="scipy==0.19.1" SLYCOT=	# legacy support, w/out slycot
+ # - SCIPY=scipy SLYCOT=			# default, w/out slycot
+ # - SCIPY="scipy==0.19.1" SLYCOT=	# legacy support, w/out slycot
 
 # install required system libraries
 before_install:
