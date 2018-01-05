@@ -35,8 +35,13 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
     def test_main_python(self):
         curdir_list = os.path.split(os.path.abspath(os.curdir))
 
-        while curdir_list and ('python-control' != curdir_list[-1]):
-            curdir_list.pop()
+        if 2 == len(curdir_list):
+            # remainder and the last
+            while 1 < len(curdir_list) and ('python-control' != curdir_list[-1]):
+                curdir_list = os.path.split(curdir_list[0])
+        else:
+            while curdir_list and ('python-control' != curdir_list[-1]):
+                curdir_list.pop()
 
         # check if curdir_list is not empty
         self.assertTrue(curdir_list)
