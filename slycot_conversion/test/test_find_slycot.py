@@ -57,7 +57,7 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
         f = slycot_conversion.find_slycot.FindFunctionNamesFromImport(r.result)
         result = f.find_function_names()
 
-        self.assertTrue(result, msg='Result dictionary empty')
+        self.assertTrue(result, msg='Result dictionary empty\npardir = %s' % pardir)
 
         expected = {'ab09ad': {('control', 'modelsimp.py', 260)},
                     'sb01bd': {('control', 'statefbk.py', 76)},
