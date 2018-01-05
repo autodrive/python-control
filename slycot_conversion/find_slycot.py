@@ -51,7 +51,6 @@ class RecursiveFinder(object):
             raise IOError('Not a directory: %s' % abs_initial_path)
         else:
             self.abs_initial_path = abs_initial_path
-            os.chdir(self.abs_initial_path)
             self.walker()
 
     def __del__(self):
