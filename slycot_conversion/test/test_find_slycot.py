@@ -37,6 +37,10 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
 
         while curdir_list and ('python-control' != curdir_list[-1]):
             curdir_list.pop()
+
+        # check if curdir_list is not empty
+        self.assertTrue(curdir_list)
+
         pardir = os.path.join(*curdir_list)
 
         # check if path exists
