@@ -184,9 +184,12 @@ class FindFunctionNamesFromImport(object):
 
     def find_function_names(self):
         for path, files in self.finder_result_dict.items():
-            for filename, lines in files.items():
-                for line_number, line in lines:
-                    self.handle_line_if_not_comment(line, path, filename, line_number)
+            if isinstance(files, dict):
+                for filename, lines in files.items():
+                    for line_number, line in lines:
+                        self.handle_line_if_not_comment(line, path, filename, line_number)
+            else:
+                self.function_names[path] = files
 
         return self.function_names
 
