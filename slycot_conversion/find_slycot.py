@@ -77,17 +77,12 @@ class RecursiveFinder(object):
             # if not in ignore
             if not self.is_path_to_ignore(relpath):
                 folder_list = self.process_folder(path, files)
-                self.result[relpath] = {'folder_list': folder_list}
                 if folder_list:
                     if self.b_rel_path_key:
                         key = relpath
                     else:
                         key = path
                     self.result[key] = folder_list
-                else:
-                    self.result['folder_list empty : %s' % relpath] = None
-            else:
-                self.result['ignore : %s' % relpath] = None
 
     def process_folder(self, folder, files):
         """
