@@ -5,7 +5,11 @@ Example: $ python find_slycot.py [path to python-control] [path to slycot]
 import copy
 import os
 import re
+import sys
 from pprint import pprint
+
+if 3 > sys.version_info[0]:
+    from io import open
 
 import numpy.linalg.lapack_lite as np_lapack_lite
 import scipy.linalg.blas as blas
@@ -51,7 +55,6 @@ class RecursiveFinder(object):
             raise IOError('Not a directory: %s' % abs_initial_path)
         else:
             self.abs_initial_path = abs_initial_path
-            os.chdir(self.abs_initial_path)
             self.walker()
 
     def __del__(self):
@@ -59,10 +62,15 @@ class RecursiveFinder(object):
         os.chdir(self.abs_return_path)
 
     def is_path_to_ignore(self, path):
-        path_parts = path.split(os.sep)
-        check_list = map(lambda folder_part_to_ignore: folder_part_to_ignore in path_parts,
-                         self.ignore_if_folder_parts_include_set)
-        return any(check_list)
+        if path.startswith('slycot'):
+            result = True
+        else:
+            path_parts = path.split(os.sep)
+            check_list = list(map(lambda folder_part_to_ignore: folder_part_to_ignore in path_parts,
+                                  self.ignore_if_folder_parts_include_set))
+
+            result = any(check_list)
+        return result
 
     def walker(self):
         """
@@ -74,12 +82,13 @@ class RecursiveFinder(object):
 
         """
         for path, dirs, files in os.walk(self.abs_initial_path):
+            relpath = os.path.relpath(path, self.abs_initial_path)
             # if not in ignore
-            if not self.is_path_to_ignore(path):
+            if not self.is_path_to_ignore(relpath):
                 folder_list = self.process_folder(path, files)
                 if folder_list:
                     if self.b_rel_path_key:
-                        key = os.path.relpath(path, self.abs_initial_path)
+                        key = relpath
                     else:
                         key = path
                     self.result[key] = folder_list
@@ -178,9 +187,12 @@ class FindFunctionNamesFromImport(object):
 
     def find_function_names(self):
         for path, files in self.finder_result_dict.items():
-            for filename, lines in files.items():
-                for line_number, line in lines:
-                    self.handle_line_if_not_comment(line, path, filename, line_number)
+            if isinstance(files, dict):
+                for filename, lines in files.items():
+                    for line_number, line in lines:
+                        self.handle_line_if_not_comment(line, path, filename, line_number)
+            else:
+                self.function_names[path] = files
 
         return self.function_names
 
@@ -345,10 +357,10 @@ def print_md_table(call_info_dict, slycot_pyctrl_set, slycot_fortran_file_name_s
     print("|:----------------:|:----------:|:------:|:--------------:|")
 
     """
-   scipy.linalg.blas – Low-level BLAS functions
-   scipy.linalg.lapack – Low-level LAPACK functions
-   scipy.linalg.cython_blas – Low-level BLAS functions for Cython
-   scipy.linalg.cython_lapack – Low-level LAPACK functions for Cython
+   scipy.linalg.blas : Low-level BLAS functions
+   scipy.linalg.lapack : Low-level LAPACK functions
+   scipy.linalg.cython_blas : Low-level BLAS functions for Cython
+   scipy.linalg.cython_lapack : Low-level LAPACK functions for Cython
    """
 
     blas_set = set(dir(blas))

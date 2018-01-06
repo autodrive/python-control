@@ -33,49 +33,84 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
         self.f = slycot_conversion.find_slycot.FindFunctionNamesFromImport(self.result_dict)
 
     def test_main_python(self):
-        pardir = os.path.abspath(os.path.join(os.pardir, os.pardir))
+        curdir_list = os.path.split(os.path.abspath(os.curdir))
+
+        if 2 == len(curdir_list):
+            # remainder and the last
+            while 1 < len(curdir_list) and ('python-control' != curdir_list[-1]):
+                curdir_list = os.path.split(curdir_list[0])
+        else:
+            while curdir_list and ('python-control' != curdir_list[-1]):
+                curdir_list.pop()
+
+        # check if curdir_list is not empty
+        self.assertTrue(curdir_list)
+
+        pardir = os.path.join(*curdir_list)
+
+        # check if path exists
+        self.assertTrue(os.path.exists(pardir), msg='Target path does not exist')
+
+        # contents of the path
+        items_set = set(os.listdir(pardir))
+
+        # check if pardir has correct items
+        self.assertIn('control', items_set)
+        self.assertIn('doc', items_set)
+
         r = slycot_conversion.find_slycot.RecursiveFinder(pardir)
         f = slycot_conversion.find_slycot.FindFunctionNamesFromImport(r.result)
         result = f.find_function_names()
-        expected = {'ab09ad': [('control', 'modelsimp.py', 260)],
-                    'sb01bd': [('control', 'statefbk.py', 76)],
-                    'sb02md': [('control', 'statefbk.py', 192),
+
+        self.assertTrue(result, msg='Result dictionary empty\npardir = %s' % pardir)
+
+        expected = {'ab09ad': {('control', 'modelsimp.py', 260)},
+                    'sb01bd': {('control', 'statefbk.py', 76)},
+                    'sb02md': {('control', 'statefbk.py', 194),
                                ('control', 'mateqn.py', 438),
-                               ('control', 'mateqn.py', 707)],
-                    'sb02mt': [('control', 'statefbk.py', 193),
+                               ('control', 'mateqn.py', 707)},
+                    'sb02mt': {('control', 'statefbk.py', 195),
                                ('control', 'mateqn.py', 443),
-                               ('control', 'mateqn.py', 712)],
-                    'sb02od': [('external', 'yottalab.py', 28)],
-                    'sb03md': [('control', 'statefbk.py', 370),
+                               ('control', 'mateqn.py', 712)},
+                    'sb02od': {('external', 'yottalab.py', 28)},
+                    'sb03md': {('control', 'statefbk.py', 372),
                                ('control', 'mateqn.py', 75),
-                               ('control', 'mateqn.py', 257)],
-                    'sb04md': [('control', 'mateqn.py', 80)],
-                    'sb04qd': [('control', 'mateqn.py', 262)],
-                    'sb10ad': [('control', 'robust.py', 150)],
-                    'sb10hd': [('control', 'robust.py', 86)],
-                    'sg02ad': [('control', 'mateqn.py', 449), ('control', 'mateqn.py', 718)],
-                    'sg03ad': [('control', 'mateqn.py', 192), ('control', 'mateqn.py', 267)],
-                    'tb01pd': [('control', 'statesp.py', 481)],
-                    'tb04ad': [('control', 'xferfcn.py', 1101),
+                               ('control', 'mateqn.py', 257)},
+                    'sb04md': {('control', 'mateqn.py', 80)},
+                    'sb04qd': {('control', 'mateqn.py', 262)},
+                    'sb10ad': {('control', 'robust.py', 149)},
+                    'sb10hd': {('control', 'robust.py', 85)},
+                    'sg02ad': {('control', 'mateqn.py', 449), ('control', 'mateqn.py', 718)},
+                    'sg03ad': {('control', 'mateqn.py', 192), ('control', 'mateqn.py', 267)},
+                    'tb01pd': {('control', 'statesp.py', 488)},
+                    'tb04ad': {('control', 'xferfcn.py', 1076),
                                (os.path.join('control', 'tests'), 'slycot_convert_test.py', 56),
-                               (os.path.join('control', 'tests'), 'slycot_convert_test.py', 115)],
-                    'td04ad': [('control', 'statesp.py', 660),
+                               (os.path.join('control', 'tests'), 'slycot_convert_test.py', 115)},
+                    'td04ad': {('control', 'statesp.py', 667),
                                (os.path.join('control', 'tests'), 'slycot_convert_test.py', 56),
-                               (os.path.join('control', 'tests'), 'slycot_convert_test.py', 115)],
-                    'sb03od': [('control', 'statefbk.py', 389)],
-                    'ab09nd': [('control', 'modelsimp.py', 265)],
-                    'ab09md': [('control', 'modelsimp.py', 260)],
+                               (os.path.join('control', 'tests'), 'slycot_convert_test.py', 115)},
+                    'sb03od': {('control', 'statefbk.py', 391)},
+                    'ab09nd': {('control', 'modelsimp.py', 265)},
+                    'ab09md': {('control', 'modelsimp.py', 260)},
                     }
 
         expected_key_set = set(expected.keys())
         result_key_set = set(result.keys())
-        self.assertSetEqual(expected_key_set, result_key_set)
+
+        # list delta set as message
+        delta_set = result_key_set - expected_key_set
+        set_msg = '\n'.join([repr((delta_key, result[delta_key])) for delta_key in delta_set])
+
+        self.assertSetEqual(expected_key_set, result_key_set, msg=set_msg)
 
         for key in expected_key_set:
+            expected_set = expected[key]
+            result_set = set(result[key])
+
             message = "\nkey = %s\n" \
                 "expected = %r\n" \
-                "result = %r" % (key, expected[key], result[key])
-            self.assertSequenceEqual(set(expected[key]), set(result[key]), message)
+                      "result = %r" % (key, expected_set, result_set)
+            self.assertSetEqual(expected_set, result_set, message)
 
     def test_find_function_names_from_import(self):
         arg_result_tuple = (
