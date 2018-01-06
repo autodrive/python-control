@@ -96,7 +96,12 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
 
         expected_key_set = set(expected.keys())
         result_key_set = set(result.keys())
-        self.assertSetEqual(expected_key_set, result_key_set)
+
+        # list delta set as message
+        delta_set = result_key_set - expected_key_set
+        set_msg = '\n'.join([repr((delta_key, result[delta_key])) for delta_key in delta_set])
+
+        self.assertSetEqual(expected_key_set, result_key_set, msg=set_msg)
 
         for key in expected_key_set:
             expected_set = expected[key]
