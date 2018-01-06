@@ -5,7 +5,11 @@ Example: $ python find_slycot.py [path to python-control] [path to slycot]
 import copy
 import os
 import re
+import sys
 from pprint import pprint
+
+if 3 > sys.version_info[0]:
+    from io import open
 
 import numpy.linalg.lapack_lite as np_lapack_lite
 import scipy.linalg.blas as blas
@@ -353,10 +357,10 @@ def print_md_table(call_info_dict, slycot_pyctrl_set, slycot_fortran_file_name_s
     print("|:----------------:|:----------:|:------:|:--------------:|")
 
     """
-   scipy.linalg.blas – Low-level BLAS functions
-   scipy.linalg.lapack – Low-level LAPACK functions
-   scipy.linalg.cython_blas – Low-level BLAS functions for Cython
-   scipy.linalg.cython_lapack – Low-level LAPACK functions for Cython
+   scipy.linalg.blas : Low-level BLAS functions
+   scipy.linalg.lapack : Low-level LAPACK functions
+   scipy.linalg.cython_blas : Low-level BLAS functions for Cython
+   scipy.linalg.cython_lapack : Low-level LAPACK functions for Cython
    """
 
     blas_set = set(dir(blas))
