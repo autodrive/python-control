@@ -59,8 +59,8 @@ class RecursiveFinder(object):
 
     def is_path_to_ignore(self, path):
         path_parts = path.split(os.sep)
-        check_list = map(lambda folder_part_to_ignore: folder_part_to_ignore in path_parts,
-                         self.ignore_if_folder_parts_include_set)
+        check_list = list(map(lambda folder_part_to_ignore: folder_part_to_ignore in path_parts,
+                              self.ignore_if_folder_parts_include_set))
         return any(check_list)
 
     def walker(self):
