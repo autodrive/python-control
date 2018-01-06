@@ -73,19 +73,21 @@ class RecursiveFinder(object):
 
         """
         for path, dirs, files in os.walk(self.abs_initial_path):
-            key = path
+            skip_key = os.path.relpath(path, self.abs_initial_path)
             # if not in ignore
             if not self.is_path_to_ignore(path):
                 folder_list = self.process_folder(path, files)
-                self.result[key] = {'folder_list': folder_list}
+                self.result[skip_key] = {'folder_list': folder_list}
                 if folder_list:
                     if self.b_rel_path_key:
                         key = os.path.relpath(path, self.abs_initial_path)
                     else:
                         key = path
                     self.result[key] = folder_list
+                else:
+                    self.result['folder_list empty : %s' % skip_key] = None
             else:
-                self.result[key] = 'ignore : %s' % path
+                self.result['ignore : %s' % skip_key] = None
 
     def process_folder(self, folder, files):
         """
