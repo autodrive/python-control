@@ -108,39 +108,6 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
                       "result = %r" % (key, expected_set, result_set)
             self.assertSetEqual(expected_set, result_set, message)
 
-    def test_find_function_names_from_import(self):
-        arg_result_tuple = (
-            (['from', 'slycot', 'import', 'tb04ad,', 'td04ad'], ['tb04ad', 'td04ad']),
-            # (['#from', 'slycot', 'import', 'sb01bd'], ['sb01bd']),
-            # (['#', 'from', 'slycot', 'import', 'ab01md'], ['ab01md']),
-            (['from', 'slycot', 'import', 'sb10hd'], ['sb10hd']),
-            (['from', 'slycot', 'import', 'sb10ad'], ['sb10ad']),
-            (['from', 'slycot', 'import', 'ab09ad'], ['ab09ad']),
-            (['from', 'slycot', 'import', 'sb01bd'], ['sb01bd']),
-            (['from', 'slycot', 'import', 'sb02md'], ['sb02md']),
-            (['from', 'slycot', 'import', 'sb02mt'], ['sb02mt']),
-            (['from', 'slycot', 'import', 'sb03md'], ['sb03md']),
-            (['from', 'slycot', 'import', 'tb04ad'], ['tb04ad']),
-            (['from', 'slycot', 'import', 'sb03md'], ['sb03md']),
-            (['from', 'slycot', 'import', 'sb04md'], ['sb04md']),
-            (['from', 'slycot', 'import', 'sg03ad'], ['sg03ad']),
-            (['from', 'slycot', 'import', 'sb03md'], ['sb03md']),
-            (['from', 'slycot', 'import', 'sb04qd'], ['sb04qd']),
-            (['from', 'slycot', 'import', 'sg03ad'], ['sg03ad']),
-            (['from', 'slycot', 'import', 'sb02md'], ['sb02md']),
-            (['from', 'slycot', 'import', 'sb02mt'], ['sb02mt']),
-            (['from', 'slycot', 'import', 'sg02ad'], ['sg02ad']),
-            (['from', 'slycot', 'import', 'sb02md'], ['sb02md']),
-            (['from', 'slycot', 'import', 'sb02mt'], ['sb02mt']),
-            (['from', 'slycot', 'import', 'sg02ad'], ['sg02ad']),
-            (['from', 'slycot', 'import', 'tb01pd'], ['tb01pd']),
-            (['from', 'slycot', 'import', 'td04ad'], ['td04ad']),
-            (['from', 'slycot', 'import', 'sb02od'], ['sb02od']),
-        )
-
-        for arg, expected in arg_result_tuple:
-            self.assertEqual(expected, self.f.find_function_names_from_import(arg))
-
     def test_handle_file4(self):
         filename = 'yottalab.py'
         line_dict = {'line number': 28, 'line text': 'from slycot import sb02od'}
@@ -421,9 +388,12 @@ class TestFindSlycotFindFunctionUsedFortran(unittest.TestCase):
         self.f = slycot_conversion.find_slycot.FindFunctionUsedFortran(self.result_dict)
 
     def test_handle_file(self):
-        args = ('SB04MD.f', "         CALL XERBLA( 'SB04MD', -INFO )", 196,
-                os.path.join('..', '..', 'slycot', 'slycot', 'src'))
-        self.f.handle_file(*args)
+        filename = 'SB04MD.f'
+        path = os.path.join('..', '..', 'slycot', 'slycot', 'src')
+        line_dict = {'line number': 196,
+                     'line text': "         CALL XERBLA( 'SB04MD', -INFO )"}
+
+        self.f.handle_file(filename, line_dict, path)
         expected = [(os.path.join('slycot', 'src'), 'SB04MD.f', 196)]
         self.assertSequenceEqual(expected, self.f.function_names['xerbla'])
 

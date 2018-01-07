@@ -245,16 +245,6 @@ class FindFunctionNamesFromImport(object):
             self.function_names[function_name] = self.function_names.get(function_name, [])
             self.function_names[function_name].append(entry)
 
-    def handle_two_functions_import(self, line_strip_split, path, filename, line_number):
-        function_name_list = self.find_function_names_from_import(line_strip_split)
-        for key in function_name_list:
-            self.add_function_name(key, path, filename, line_number)
-
-    @staticmethod
-    def find_function_names_from_import(line_strip_split):
-        function_name_list = [function_name.strip(',') for function_name in line_strip_split[3:]]
-        return function_name_list
-
     def add_function_name(self, key, path, filename, line_number):
         if key in self.function_names:
             self.function_names[key].append((path, filename, line_number))
@@ -288,23 +278,16 @@ class FindFunctionUsedFortran(FindFunctionNamesFromImport):
         result = fortran_line[0].strip()
         return result
 
-    def handle_file(self, filename, line, line_number, path):
+    def handle_file(self, filename, line_dict, path):
         """
-        find function name from call line
-        and add Fortran file path with filename and line number
-        Parameters
-        ----------
-        filename
-        line
-        line_number
-        path
 
-        Returns
-        -------
-
+        :param str filename: python file name
+        :param dict line_dict: {'line number': int, 'line text': str}
+        :param str path: relative path
+        :return:
         """
-        function_name = self.find_function_name_from_call_line(line)
-        self.add_function_name(function_name, os.path.join('slycot', 'src'), filename, line_number)
+        function_name = self.find_function_name_from_call_line(line_dict['line text'])
+        self.add_function_name(function_name, os.path.join('slycot', 'src'), filename, line_dict['line number'])
 
     @staticmethod
     def find_function_name_from_call_line(line):
