@@ -32,7 +32,7 @@ def get_first_script_parameter():
     return os.path.abspath(result)
 
 
-class RecursiveFinder(object):
+class RecursiveInlineStringFinder(object):
     """
     Search for pattern in files of given extension recursively
     """
@@ -147,7 +147,7 @@ class RecursiveFinder(object):
         return result
 
 
-class RecursiveFinderFortran(RecursiveFinder):
+class RecursiveInlineStringFinderFortran(RecursiveInlineStringFinder):
     def __init__(self, initial_path=get_first_script_parameter(), extension='.f', pattern="CALL", function_list=None):
 
         if function_list is None:
@@ -156,7 +156,8 @@ class RecursiveFinderFortran(RecursiveFinder):
             self.b_gotta_catch_em_all = False
             self.function_list = function_list
 
-        super(RecursiveFinderFortran, self).__init__(initial_path=initial_path, extension=extension, pattern=pattern)
+        super(RecursiveInlineStringFinderFortran, self).__init__(initial_path=initial_path, extension=extension,
+                                                                 pattern=pattern)
 
     def process_file(self, path, file_name):
         """
@@ -176,7 +177,7 @@ class RecursiveFinderFortran(RecursiveFinder):
 
         # if self.function_list is empty or function_name is in self.function_list
         if self.b_gotta_catch_em_all or (function_name in self.function_list):
-            result = RecursiveFinder.process_file(self, path=path, file_name=file_name)
+            result = RecursiveInlineStringFinder.process_file(self, path=path, file_name=file_name)
 
         return result
 
@@ -315,7 +316,7 @@ class FindFunctionUsedFortran(FindFunctionNamesFromImport):
 
 def main(python_control_path, slycot_path):
     # from python import lines, find fortran function names
-    python_finder = RecursiveFinder(python_control_path)
+    python_finder = RecursiveInlineStringFinder(python_control_path)
 
     slycot_fortran_file_name_set = set(
         [os.path.splitext(filename)[0].lower() for filename in os.listdir(os.path.join(slycot_path, 'slycot', 'src')) if
@@ -333,7 +334,7 @@ def main(python_control_path, slycot_path):
     # from fortran CALL lines, find selected fortran function names
     # find lines calling subroutines from Fortran source codes recursively visiting sub-folders
 
-    fortran_finder = RecursiveFinderFortran(slycot_path, function_list=function_name_set, pattern='CALL')
+    fortran_finder = RecursiveInlineStringFinderFortran(slycot_path, function_list=function_name_set, pattern='CALL')
 
     fortran_function_finder = FindFunctionUsedFortran(fortran_finder.result, function_names)
     fortran_call_dict = fortran_function_finder.find_function_names()
@@ -399,7 +400,8 @@ def print_md_table(call_info_dict, slycot_pyctrl_set, slycot_fortran_file_name_s
 
 
 def find_in_tree(slycot_path, function_tuple, pattern_string):
-    fortran_go_to = RecursiveFinderFortran(slycot_path, function_list=function_tuple, pattern=pattern_string)
+    fortran_go_to = RecursiveInlineStringFinderFortran(slycot_path, function_list=function_tuple,
+                                                       pattern=pattern_string)
     print(("with %r " % pattern_string).ljust(60, '#'))
 
     fortran_go_to_set = set()

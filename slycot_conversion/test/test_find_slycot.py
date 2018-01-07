@@ -58,7 +58,7 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
         self.assertIn('control', items_set)
         self.assertIn('doc', items_set)
 
-        r = slycot_conversion.find_slycot.RecursiveFinder(pardir)
+        r = slycot_conversion.find_slycot.RecursiveInlineStringFinder(pardir)
         f = slycot_conversion.find_slycot.FindFunctionNamesFromImport(r.result)
         result = f.find_function_names()
 
