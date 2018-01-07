@@ -60,35 +60,99 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
 
         self.assertTrue(result, msg='Result dictionary empty\npardir = %s' % pardir)
 
-        expected = {'ab09ad': {('control', 'modelsimp.py', 260)},
-                    'sb01bd': {('control', 'statefbk.py', 76)},
-                    'sb02md': {('control', 'statefbk.py', 194),
-                               ('control', 'mateqn.py', 438),
-                               ('control', 'mateqn.py', 707)},
-                    'sb02mt': {('control', 'statefbk.py', 195),
-                               ('control', 'mateqn.py', 443),
-                               ('control', 'mateqn.py', 712)},
-                    'sb02od': {('external', 'yottalab.py', 28)},
-                    'sb03md': {('control', 'statefbk.py', 372),
-                               ('control', 'mateqn.py', 75),
-                               ('control', 'mateqn.py', 257)},
-                    'sb04md': {('control', 'mateqn.py', 80)},
-                    'sb04qd': {('control', 'mateqn.py', 262)},
-                    'sb10ad': {('control', 'robust.py', 149)},
-                    'sb10hd': {('control', 'robust.py', 85)},
-                    'sg02ad': {('control', 'mateqn.py', 449), ('control', 'mateqn.py', 718)},
-                    'sg03ad': {('control', 'mateqn.py', 192), ('control', 'mateqn.py', 267)},
-                    'tb01pd': {('control', 'statesp.py', 488)},
-                    'tb04ad': {('control', 'xferfcn.py', 1076),
-                               (os.path.join('control', 'tests'), 'slycot_convert_test.py', 56),
-                               (os.path.join('control', 'tests'), 'slycot_convert_test.py', 115)},
-                    'td04ad': {('control', 'statesp.py', 667),
-                               (os.path.join('control', 'tests'), 'slycot_convert_test.py', 56),
-                               (os.path.join('control', 'tests'), 'slycot_convert_test.py', 115)},
-                    'sb03od': {('control', 'statefbk.py', 391)},
-                    'ab09nd': {('control', 'modelsimp.py', 265)},
-                    'ab09md': {('control', 'modelsimp.py', 260)},
-                    }
+        expected = {'sb03md': [('control', 'mateqn.py', {'line number': 75, 'line text': 'from slycot import sb03md',
+                                                         'file name': 'mateqn.py'}), ('control', 'mateqn.py',
+                                                                                      {'line number': 257,
+                                                                                       'line text': 'from slycot import sb03md',
+                                                                                       'file name': 'mateqn.py'}), (
+                                   'control', 'statefbk.py',
+                                   {'line number': 372, 'line text': 'from slycot import sb03md',
+                                    'file name': 'statefbk.py'})], 'sb04md': [('control',
+                                                                               'mateqn.py',
+                                                                               {'line number': 80,
+                                                                                'line text': 'from slycot import sb04md',
+                                                                                'file name': 'mateqn.py'})],
+                    'sg03ad': [('control', 'mateqn.py', {'line number': 192, 'line text': 'from slycot import sg03ad',
+                                                         'file name': 'mateqn.py'}), ('control', 'mateqn.py',
+                                                                                      {'line number': 267,
+                                                                                       'line text': 'from slycot import sg03ad',
+                                                                                       'file name': 'mateqn.py'})],
+                    'sb04qd': [('control', 'mateqn.py', {'line number': 262, 'line text': 'from slycot import sb04qd',
+                                                         'file name': 'mateqn.py'})], 'sb02md': [(
+                'control', 'mateqn.py',
+                {'line number': 438,
+                 'line text': 'from slycot import sb02md',
+                 'file name': 'mateqn.py'}),
+                (
+                    'control', 'mateqn.py',
+                    {'line number': 707,
+                     'line text': 'from slycot import sb02md',
+                     'file name': 'mateqn.py'}),
+                ('control',
+                 'statefbk.py',
+                 {'line number': 194,
+                  'line text': 'from slycot import sb02md',
+                  'file name': 'statefbk.py'})],
+                    'sb02mt': [('control', 'mateqn.py', {'line number': 443, 'line text': 'from slycot import sb02mt',
+                                                         'file name': 'mateqn.py'}), ('control', 'mateqn.py',
+                                                                                      {'line number': 712,
+                                                                                       'line text': 'from slycot import sb02mt',
+                                                                                       'file name': 'mateqn.py'}), (
+                                   'control', 'statefbk.py',
+                                   {'line number': 195, 'line text': 'from slycot import sb02mt',
+                                    'file name': 'statefbk.py'})], 'sg02ad': [('control',
+                                                                               'mateqn.py', {
+                                                                                   'line number': 449,
+                                                                                   'line text': 'from slycot import sg02ad',
+                                                                                   'file name': 'mateqn.py'}),
+                                                                              ('control',
+                                                                               'mateqn.py', {
+                                                                                   'line number': 718,
+                                                                                   'line text': 'from slycot import sg02ad',
+                                                                                   'file name': 'mateqn.py'})],
+                    'ab09md': [('control', 'modelsimp.py',
+                                {'line number': 260, 'line text': 'from slycot import ab09md, ab09ad',
+                                 'file name': 'modelsimp.py'})], 'ab09ad': [('control', 'modelsimp.py',
+                                                                             {'line number': 260,
+                                                                              'line text': 'from slycot import ab09md, ab09ad',
+                                                                              'file name': 'modelsimp.py'})],
+                    'ab09nd': [('control', 'modelsimp.py',
+                                {'line number': 265, 'line text': 'from slycot import ab09nd',
+                                 'file name': 'modelsimp.py'})], 'sb10hd': [('control', 'robust.py', {'line number': 85,
+                                                                                                      'line text': 'from slycot import sb10hd',
+                                                                                                      'file name': 'robust.py'})],
+                    'sb10ad': [('control', 'robust.py', {'line number': 149, 'line text': 'from slycot import sb10ad',
+                                                         'file name': 'robust.py'})], 'sb01bd': [('control',
+                                                                                                  'statefbk.py',
+                                                                                                  {'line number': 76,
+                                                                                                   'line text': 'from slycot import sb01bd',
+                                                                                                   'file name': 'statefbk.py'})],
+                    'sb03od': [('control', 'statefbk.py', {'line number': 391, 'line text': 'from slycot import sb03od',
+                                                           'file name': 'statefbk.py'})], 'tb01pd': [('control',
+                                                                                                      'statesp.py', {
+                                                                                                          'line number': 488,
+                                                                                                          'line text': 'from slycot import tb01pd',
+                                                                                                          'file name': 'statesp.py'})],
+                    'td04ad': [('control', 'statesp.py', {'line number': 667, 'line text': 'from slycot import td04ad',
+                                                          'file name': 'statesp.py'}), (
+                                   'control\\tests', 'slycot_convert_test.py',
+                                   {'line number': 56, 'line text': 'from slycot import tb04ad, td04ad',
+                                    'file name': 'slycot_convert_test.py'}),
+                               ('control\\tests', 'slycot_convert_test.py',
+                                {'line number': 115,
+                                 'line text': 'from slycot import tb04ad, td04ad',
+                                 'file name': 'slycot_convert_test.py'})],
+                    'tb04ad': [('control', 'xferfcn.py', {'line number': 1076, 'line text': 'from slycot import tb04ad',
+                                                          'file name': 'xferfcn.py'}), (
+                                   'control\\tests', 'slycot_convert_test.py',
+                                   {'line number': 56, 'line text': 'from slycot import tb04ad, td04ad',
+                                    'file name': 'slycot_convert_test.py'}),
+                               ('control\\tests', 'slycot_convert_test.py',
+                                {'line number': 115,
+                                 'line text': 'from slycot import tb04ad, td04ad',
+                                 'file name': 'slycot_convert_test.py'})],
+                    'sb02od': [('external', 'yottalab.py', {'line number': 28, 'line text': 'from slycot import sb02od',
+                                                            'file name': 'yottalab.py'})]}
 
         expected_key_set = set(expected.keys())
         result_key_set = set(result.keys())
@@ -99,14 +163,23 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
 
         self.assertSetEqual(expected_key_set, result_key_set, msg=set_msg)
 
-        for key in expected_key_set:
-            expected_set = expected[key]
-            result_set = set(result[key])
+        self.maxDiff = None
 
-            message = "\nkey = %s\n" \
-                "expected = %r\n" \
-                      "result = %r" % (key, expected_set, result_set)
-            self.assertSetEqual(expected_set, result_set, message)
+        for key, expected_seq in expected.items():
+            result_seq = result[key]
+
+            expected_dict = {}
+            # convert expected list into a smaller dictionary
+            for expected_record in expected_seq:
+                expected_dict[(expected_record[0], expected_record[1])] = expected_record[2:]
+
+            result_dict = {}
+            for result_record in result_seq:
+                result_dict[(result_record[0], result_record[1])] = result_record[2:]
+
+            for path_filename, expected_dict_tuple in expected_dict.items():
+                self.assertIn(path_filename, result_dict)
+                self.assertSequenceEqual(expected_dict_tuple, result_dict[path_filename])
 
     def test_handle_file4(self):
         filename = 'yottalab.py'
@@ -114,7 +187,7 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
         path = os.path.join('..', 'control', 'tests')
 
         self.f.handle_file(filename, line_dict, path)
-        expected = {'sb02od': [(os.path.join(os.pardir, 'control', 'tests'), 'yottalab.py', 28)]}
+        expected = {'sb02od': [(os.path.join(os.pardir, 'control', 'tests'), 'yottalab.py', line_dict)]}
         self.assertDictEqual(expected, self.f.function_names)
 
     def test_handle_file5(self):
@@ -123,8 +196,8 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
         path = os.path.join('..', 'control', 'tests')
 
         self.f.handle_file(filename, line_dict, path)
-        expected = {'td04ad': [(os.path.join('..', 'control', 'tests'), 'slycot_convert_test.py', 115)],
-                    'tb04ad': [(os.path.join('..', 'control', 'tests'), 'slycot_convert_test.py', 115)]}
+        expected = {'td04ad': [(os.path.join('..', 'control', 'tests'), 'slycot_convert_test.py', line_dict)],
+                    'tb04ad': [(os.path.join('..', 'control', 'tests'), 'slycot_convert_test.py', line_dict)]}
         self.assertDictEqual(expected, self.f.function_names)
 
 

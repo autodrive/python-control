@@ -149,7 +149,6 @@ class RecursiveInlineStringFinder(object):
                         {
                             'line number': line_number,
                             'line text': line_text.strip(),
-                            'path': path,
                             'file name': file_name,
                         }
                     )
@@ -248,7 +247,7 @@ class FindFunctionNamesFromImport(object):
             function_name = function_name.strip(',')
 
             # prepare entry to add to the function_names dictionary
-            entry = (path, filename, line_dict['line number'])
+            entry = (path, filename, line_dict)
 
             # init self.function_names[function_name] if does not exist yet
             self.function_names[function_name] = self.function_names.get(function_name, [])
