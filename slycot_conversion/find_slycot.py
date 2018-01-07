@@ -148,7 +148,9 @@ class RecursiveInlineStringFinder(object):
                     result.append(
                         {
                             'line number': line_number,
-                            'line text': line_text.strip()
+                            'line text': line_text.strip(),
+                            'path': path,
+                            'file name': file_name,
                         }
                     )
 
