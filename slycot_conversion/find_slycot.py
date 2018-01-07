@@ -37,7 +37,8 @@ class RecursiveFinder(object):
     Search for pattern in files of given extension recursively
     """
 
-    def __init__(self, initial_path=os.curdir, extension='.py', pattern="from" + " slycot import", b_rel_path=True):
+    def __init__(self, initial_path=os.curdir, extension='.py', pattern=' '.join(("from", "slycot", "import")),
+                 b_rel_path=True):
         self.abs_return_path = os.getcwd()
         self.extension = extension
         self.pattern = pattern
