@@ -1,10 +1,6 @@
 import os
-import sys
 import unittest
 
-print(os.path.abspath(os.curdir))
-
-sys.path.append(os.path.abspath(os.path.join(os.pardir)))
 import slycot_conversion.find_slycot
 
 
