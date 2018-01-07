@@ -238,11 +238,22 @@ class FindFunctionNamesFromImport(object):
         line_strip = line_dict['line text'].strip()
         line_strip_split = line_strip.split()
         i_slycot = line_strip_split.index('import')
+
+        # list of words after 'import'
         function_names = line_strip_split[(i_slycot + 1):]
+
+        # loop over words after 'import'
         for function_name in function_names:
+            # remove commas
             function_name = function_name.strip(',')
+
+            # prepare entry to add to the function_names dictionary
             entry = (path, filename, line_dict['line number'])
+
+            # init self.function_names[function_name] if does not exist yet
             self.function_names[function_name] = self.function_names.get(function_name, [])
+
+            # append the entry
             self.function_names[function_name].append(entry)
 
     def add_function_name(self, key, path, filename, line_number):
