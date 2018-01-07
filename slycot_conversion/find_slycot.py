@@ -316,13 +316,13 @@ class FindFunctionUsedFortran(FindFunctionNamesFromImport):
 
 def main(python_control_path, slycot_path):
     # from python import lines, find fortran function names
-    python_finder = RecursiveInlineStringFinder(python_control_path)
+    python_import_finder = RecursiveInlineStringFinder(python_control_path)
 
     slycot_fortran_file_name_set = set(
         [os.path.splitext(filename)[0].lower() for filename in os.listdir(os.path.join(slycot_path, 'slycot', 'src')) if
          '.f' == os.path.splitext(filename)[-1]])
 
-    python_function_finder = FindFunctionNamesFromImport(python_finder.result)
+    python_function_finder = FindFunctionNamesFromImport(python_import_finder.result)
     function_names = python_function_finder.find_function_names()
 
     function_name_set = set(function_names.keys())
