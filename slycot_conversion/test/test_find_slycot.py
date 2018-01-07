@@ -142,23 +142,23 @@ class TestFindSlycotFindFunctionsUsed(unittest.TestCase):
             self.assertEqual(expected, self.f.find_function_names_from_import(arg))
 
     def test_handle_file4(self):
-        args4 = ('yottalab.py',
-                 'from slycot import sb02od',
-                 28,
-                 os.path.join('..', 'control', 'tests'))
-        self.f.handle_file(*args4)
+        filename = 'yottalab.py'
+        line_dict = {'line number': 28, 'line text': 'from slycot import sb02od'}
+        path = os.path.join('..', 'control', 'tests')
+
+        self.f.handle_file(filename, line_dict, path)
         expected = {'sb02od': [(os.path.join(os.pardir, 'control', 'tests'), 'yottalab.py', 28)]}
-        self.assertSequenceEqual(expected, self.f.function_names)
+        self.assertDictEqual(expected, self.f.function_names)
 
     def test_handle_file5(self):
-        args5 = ('slycot_convert_test.py',
-                 '''        from slycot import tb04ad, td04ad''',
-                 115,
-                 os.path.join('..', 'control', 'tests'))
-        self.f.handle_file(*args5)
+        filename = 'slycot_convert_test.py'
+        line_dict = {'line number': 115, 'line text': '        from slycot import tb04ad, td04ad'}
+        path = os.path.join('..', 'control', 'tests')
+
+        self.f.handle_file(filename, line_dict, path)
         expected = {'td04ad': [(os.path.join('..', 'control', 'tests'), 'slycot_convert_test.py', 115)],
                     'tb04ad': [(os.path.join('..', 'control', 'tests'), 'slycot_convert_test.py', 115)]}
-        self.assertSequenceEqual(expected, self.f.function_names)
+        self.assertDictEqual(expected, self.f.function_names)
 
 
 class TestFindSlycotFindFunctionUsedFortran(unittest.TestCase):
