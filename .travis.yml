@@ -15,98 +15,21 @@ cache:
 #
 # We also want to test with and without slycot
 
-matrix:
-  include:
-    - os : linux
-      env: 
-        - CONDA_PYTHON=3.6
-        - SCIPY=scipy             # default, with slycot
-        - SLYCOT=slycot
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.6
-        - SCIPY=scipy 
-        - SLYCOT=slycot
-    - os : linux
-      env: 
-        - CONDA_PYTHON=3.6
-        - SCIPY=scipy             # default, w/out slycot
-        - SLYCOT=
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.6
-        - SCIPY=scipy 
-        - SLYCOT=
-    - os : linux
-      env: 
-        - CONDA_PYTHON=3.6
-        - SCIPY="scipy==0.19.1"   # legacy support, w/out slycot
-        - SLYCOT=
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.6
-        - SCIPY="scipy==0.19.1" 
-        - SLYCOT=
-    - os : linux
-      env: 
-        - CONDA_PYTHON=3.5
-        - SCIPY=scipy 
-        - SLYCOT=slycot
-    - os : linux
-      env: 
-        - CONDA_PYTHON=3.5
-        - SCIPY=scipy 
-        - SLYCOT=
-    - os : linux
-      env: 
-        - CONDA_PYTHON=3.5
-        - SCIPY="scipy==0.19.1" 
-        - SLYCOT=
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.5
-        - SCIPY=scipy 
-        - SLYCOT=slycot
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.5
-        - SCIPY=scipy 
-        - SLYCOT=
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.5
-        - SCIPY="scipy==0.19.1" 
-        - SLYCOT=
-    - os : linux
-      env: 
-        - CONDA_PYTHON=2.7
-        - SCIPY=scipy 
-        - SLYCOT=slycot
-    - os : linux
-      env: 
-        - CONDA_PYTHON=2.7
-        - SCIPY=scipy 
-        - SLYCOT=
-    - os : linux
-      env: 
-        - CONDA_PYTHON=2.7
-        - SCIPY="scipy==0.19.1" 
-        - SLYCOT=
-    - os : osx
-      env: 
-        - CONDA_PYTHON=2.7
-        - SCIPY=scipy 
-        - SLYCOT=slycot
-    - os : osx
-      env: 
-        - CONDA_PYTHON=2.7
-        - SCIPY=scipy 
-        - SLYCOT=
-    - os : osx
-      env: 
-        - CONDA_PYTHON=2.7
-        - SCIPY="scipy==0.19.1" 
-        - SLYCOT=
+os:
+  - linux
+  - osx
+
+env:
+  matrix:
+    - CONDA_PYTHON=3.6 SCIPY=scipy            SLYCOT=slycot   # default, with slycot
+    - CONDA_PYTHON=3.6 SCIPY=scipy            SLYCOT=         # default, w/out slycot
+    - CONDA_PYTHON=3.6 SCIPY="scipy==0.19.1"  SLYCOT=         # legacy support, w/out slycot
+    - CONDA_PYTHON=3.5 SCIPY=scipy            SLYCOT=slycot
+    - CONDA_PYTHON=3.5 SCIPY=scipy            SLYCOT=
+    - CONDA_PYTHON=3.5 SCIPY="scipy==0.19.1"  SLYCOT=
+    - CONDA_PYTHON=2.7 SCIPY=scipy            SLYCOT=slycot
+    - CONDA_PYTHON=2.7 SCIPY=scipy            SLYCOT=
+    - CONDA_PYTHON=2.7 SCIPY="scipy==0.19.1"  SLYCOT=
 
 # Install gfortran for testing slycot; use apt-get instead of conda in
 # order to include the proper CXXABI dependency (updated in GCC 4.9)
