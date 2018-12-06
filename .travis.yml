@@ -22,16 +22,31 @@ matrix:
         - CONDA_PYTHON=3.6
         - SCIPY=scipy             # default, with slycot
         - SLYCOT=slycot
+    - os : osx
+      env: 
+        - CONDA_PYTHON=3.6
+        - SCIPY=scipy 
+        - SLYCOT=slycot
     - os : linux
       env: 
         - CONDA_PYTHON=3.6
         - SCIPY=scipy             # default, w/out slycot
+        - SLYCOT=
+    - os : osx
+      env: 
+        - CONDA_PYTHON=3.6
+        - SCIPY=scipy 
         - SLYCOT=
     - os : linux
       env: 
         - CONDA_PYTHON=3.6
         - SCIPY="scipy==0.19.1"   # legacy support, w/out slycot
         - SLYCOT=
+    - os : osx
+      env: 
+        - CONDA_PYTHON=3.6
+        - SCIPY="scipy==0.19.1" 
+        - SLYCOT=
     - os : linux
       env: 
         - CONDA_PYTHON=3.5
@@ -43,6 +58,21 @@ matrix:
         - SCIPY=scipy 
         - SLYCOT=
     - os : linux
+      env: 
+        - CONDA_PYTHON=3.5
+        - SCIPY="scipy==0.19.1" 
+        - SLYCOT=
+    - os : osx
+      env: 
+        - CONDA_PYTHON=3.5
+        - SCIPY=scipy 
+        - SLYCOT=slycot
+    - os : osx
+      env: 
+        - CONDA_PYTHON=3.5
+        - SCIPY=scipy 
+        - SLYCOT=
+    - os : osx
       env: 
         - CONDA_PYTHON=3.5
         - SCIPY="scipy==0.19.1" 
@@ -60,36 +90,6 @@ matrix:
     - os : linux
       env: 
         - CONDA_PYTHON=2.7
-        - SCIPY="scipy==0.19.1" 
-        - SLYCOT=
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.6
-        - SCIPY=scipy 
-        - SLYCOT=slycot
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.6
-        - SCIPY=scipy 
-        - SLYCOT=
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.6
-        - SCIPY="scipy==0.19.1" 
-        - SLYCOT=
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.5
-        - SCIPY=scipy 
-        - SLYCOT=slycot
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.5
-        - SCIPY=scipy 
-        - SLYCOT=
-    - os : osx
-      env: 
-        - CONDA_PYTHON=3.5
         - SCIPY="scipy==0.19.1" 
         - SLYCOT=
     - os : osx
