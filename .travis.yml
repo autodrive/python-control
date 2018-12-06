@@ -13,6 +13,10 @@ python:
   - "3.5"
   - "2.7"
 
+os:
+  - linux
+  - osx
+
 # Test against multiple version of SciPy, with and without slycot
 #
 # Because there were significant changes in SciPy between v0 and v1, we 
