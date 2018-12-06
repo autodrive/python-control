@@ -11,17 +11,95 @@ cache:
 matrix:
   include:
     - os : linux
-      env: CONDA_PYTHON=3.6
+      env: 
+        - CONDA_PYTHON=3.6
+        - SCIPY=scipy 
+        - SLYCOT=slycot
     - os : linux
-      env: CONDA_PYTHON=3.5
+      env: 
+        - CONDA_PYTHON=3.6
+        - SCIPY=scipy 
+        - SLYCOT=
     - os : linux
-      env: CONDA_PYTHON=2.7
+      env: 
+        - CONDA_PYTHON=3.6
+        - SCIPY="scipy==0.19.1" 
+        - SLYCOT=
+    - os : linux
+      env: 
+        - CONDA_PYTHON=3.5
+        - SCIPY=scipy 
+        - SLYCOT=slycot
+    - os : linux
+      env: 
+        - CONDA_PYTHON=3.5
+        - SCIPY=scipy 
+        - SLYCOT=
+    - os : linux
+      env: 
+        - CONDA_PYTHON=3.5
+        - SCIPY="scipy==0.19.1" 
+        - SLYCOT=
+    - os : linux
+      env: 
+        - CONDA_PYTHON=2.7
+        - SCIPY=scipy 
+        - SLYCOT=slycot
+    - os : linux
+      env: 
+        - CONDA_PYTHON=2.7
+        - SCIPY=scipy 
+        - SLYCOT=
+    - os : linux
+      env: 
+        - CONDA_PYTHON=2.7
+        - SCIPY="scipy==0.19.1" 
+        - SLYCOT=
     - os : osx
-      env: CONDA_PYTHON=3.6
+      env: 
+        - CONDA_PYTHON=3.6
+        - SCIPY=scipy 
+        - SLYCOT=slycot
     - os : osx
-      env: CONDA_PYTHON=3.5
+      env: 
+        - CONDA_PYTHON=3.6
+        - SCIPY=scipy 
+        - SLYCOT=
     - os : osx
-      env: CONDA_PYTHON=2.7
+      env: 
+        - CONDA_PYTHON=3.6
+        - SCIPY="scipy==0.19.1" 
+        - SLYCOT=
+    - os : osx
+      env: 
+        - CONDA_PYTHON=3.5
+        - SCIPY=scipy 
+        - SLYCOT=slycot
+    - os : osx
+      env: 
+        - CONDA_PYTHON=3.5
+        - SCIPY=scipy 
+        - SLYCOT=
+    - os : osx
+      env: 
+        - CONDA_PYTHON=3.5
+        - SCIPY="scipy==0.19.1" 
+        - SLYCOT=
+    - os : osx
+      env: 
+        - CONDA_PYTHON=2.7
+        - SCIPY=scipy 
+        - SLYCOT=slycot
+    - os : osx
+      env: 
+        - CONDA_PYTHON=2.7
+        - SCIPY=scipy 
+        - SLYCOT=
+    - os : osx
+      env: 
+        - CONDA_PYTHON=2.7
+        - SCIPY="scipy==0.19.1" 
+        - SLYCOT=
 
 # Test against multiple version of SciPy, with and without slycot
 #
