@@ -1,5 +1,5 @@
 sudo: false
-language: python
+language: generic
 
 cache:
   apt: true
@@ -8,14 +8,20 @@ cache:
     - $HOME/.cache/pip
     - $HOME/.local
 
-python:
-  - "3.6"
-  - "3.5"
-  - "2.7"
-
-os:
-  - linux
-  - osx
+matrix:
+  include:
+    - os : linux
+      env: CONDA_PYTHON=3.6
+    - os : linux
+      env: CONDA_PYTHON=3.5
+    - os : linux
+      env: CONDA_PYTHON=2.7
+    - os : osx
+      env: CONDA_PYTHON=3.6
+    - os : osx
+      env: CONDA_PYTHON=3.5
+    - os : osx
+      env: CONDA_PYTHON=2.7
 
 # Test against multiple version of SciPy, with and without slycot
 #
@@ -40,11 +46,19 @@ before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   # use miniconda to install numpy/scipy, to avoid lengthy build from source
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-      wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
-    else
-      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-    fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      if [[ "$CONDA_PYTHON" == "2.7" ]]; then
+        wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+      else
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+      fi;
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+      if [[ "$CONDA_PYTHON" == "2.7" ]]; then
+        wget https://repo.continuum.io/miniconda/Miniconda2-latest-MacOSX-x86_64.sh -O miniconda.sh;
+      else
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+      fi;
+    fi;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
@@ -52,7 +66,7 @@ before_install:
   - conda update -q conda
   - conda config --add channels python-control
   - conda info -a
-  - conda create -q -n test-environment python="$TRAVIS_PYTHON_VERSION" pip coverage
+  - conda create -q -n test-environment python="$CONDA_PYTHON" pip coverage
   - source activate test-environment
   # Install openblas if slycot is being used
   - if [[ "$SLYCOT" != "" ]]; then
