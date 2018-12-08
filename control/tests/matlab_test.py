@@ -415,7 +415,7 @@ class TestMatlab(unittest.TestCase):
     def testLQR(self):
         (K, S, E) = lqr(self.siso_ss1.A, self.siso_ss1.B, np.eye(2), np.eye(1))
         (K, S, E) = lqr(self.siso_ss2.A, self.siso_ss2.B, np.eye(3), \
-                            np.eye(1), [[1], [1], [2]])
+                            np.eye(1), [[1.0], [1.0], [2.0]])
 
     def testRss(self):
         rss(1)
