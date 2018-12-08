@@ -270,6 +270,9 @@ def lqr(*args, **keywords):
     >>> K, S, E = lqr(A, B, Q, R, [N])
 
     """
+    import os
+    f = open(os.path.abspath('my_test_lqr.log'), 'at')
+
 
     # Make sure that SLICOT is installed
     try:
@@ -278,10 +281,13 @@ def lqr(*args, **keywords):
     except ImportError:
         raise ControlSlycot("can't find slycot module 'sb02md' or 'sb02nt'")
 
+    print('import sb02md & sb02mt successful\n')
+
     #
     # Process the arguments and figure out what inputs we received
     #
 
+    print('len(args) = %s\n' % (len(args)))
     # Get the system description
     if (len(args) < 3):
         raise ControlArgument("not enough input arguments")
@@ -293,22 +299,44 @@ def lqr(*args, **keywords):
         B = np.array(args[0].B, ndmin=2, dtype=float);
         index = 1;
     except AttributeError:
+        print('trying A, B = args[0], args[1]\n')
         # Arguments should be A and B matrices
         A = np.array(args[0], ndmin=2, dtype=float);
         B = np.array(args[1], ndmin=2, dtype=float);
         index = 2;
 
+    print('A = %s\n' % A)
+    print('B = %s\n' % B)
+
     # Get the weighting matrices (converting to matrices, if needed)
     Q = np.array(args[index], ndmin=2, dtype=float);
     R = np.array(args[index+1], ndmin=2, dtype=float);
+
+    print('Q = %s\n' % Q)
+    print('R = %s\n' % R)
+
+    print('(len(args) > index + 2) = %s\n' % (len(args) > index + 2))
+
     if (len(args) > index + 2):
+        print('N = args[index+2]\n')
         N = np.array(args[index+2], ndmin=2, dtype=float);
     else:
+        print('N = zeros()\n')
         N = np.zeros((Q.shape[0], R.shape[1]));
+
+    print('N = %s\n' % N)
 
     # Check dimensions for consistency
     nstates = B.shape[0];
+    print('nstates = %s\n' % nstates)
     ninputs = B.shape[1];
+    print('ninputs = %s\n' % ninputs)
+    print('A.shape = %s\n' % repr(A.shape))
+
+    print('Q.shape = %s\n' % repr(Q.shape))
+    print('R.shape = %s\n' % repr(R.shape))
+    print('N.shape = %s\n' % repr(N.shape))
+
     if (A.shape[0] != nstates or A.shape[1] != nstates):
         raise ControlDimension("inconsistent system dimensions")
 
@@ -321,8 +349,26 @@ def lqr(*args, **keywords):
     A_b,B_b,Q_b,R_b,L_b,ipiv,oufact,G = \
         sb02mt(nstates, ninputs, B, R, A, Q, N, jobl='N');
 
+    print('A_b = %s\n' % A_b)
+    print('B_b = %s\n' % B_b)
+    print('Q_b = %s\n' % Q_b)
+    print('R_b = %s\n' % R_b)
+    print('L_b = %s\n' % L_b)
+    print('ipiv = %s\n' % ipiv)
+    print('oufact = %s\n' % oufact)
+    print('G = %s\n' % G)
+
     # Call the SLICOT function
     X,rcond,w,S,U,A_inv = sb02md(nstates, A_b, G, Q_b, 'C')
+
+    print('X = %s\n' % X)
+    print('rcond = %s\n' % rcond)
+    print('w = %s\n' % w)
+    print('S = %s\n' % S)
+    print('U = %s\n' % U)
+    print('A_inv = %s\n' % A_inv)
+
+    f.close()
 
     # Now compute the return value
     # We assume that R is positive definite and, hence, invertible

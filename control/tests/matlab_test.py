@@ -413,10 +413,15 @@ class TestMatlab(unittest.TestCase):
 
     @unittest.skipIf(not slycot_check(), "slycot not installed")
     def testLQR(self):
+        import os
+        f = open(os.path.abspath('my_test_lqr.log'), 'wt')
+        print('self.siso_ss1 = %r' % self.siso_ss1)
+        print('self.siso_ss2 = %r' % self.siso_ss2)
+        f.close()
         (K, S, E) = lqr(self.siso_ss1.A, self.siso_ss1.B, np.eye(2), np.eye(1))
         (K, S, E) = lqr(self.siso_ss2.A, self.siso_ss2.B, np.eye(3), \
-                            np.eye(1), [[1], [1], [2]])
-
+                            np.eye(1), [[1.0], [1.0], [2.0]])
+ 
     def testRss(self):
         rss(1)
         rss(2)
