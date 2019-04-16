@@ -16,18 +16,18 @@ class TestCanonical(unittest.TestCase):
         coeffs = [1.0, 2.0, 3.0, 4.0, 1.0]
         A_true = np.polynomial.polynomial.polycompanion(coeffs)
         A_true = np.fliplr(np.rot90(A_true))
-        B_true = np.matrix("1.0 0.0 0.0 0.0").T
-        C_true = np.matrix("1.0 1.0 1.0 1.0")
+        B_true = np.array("1.0 0.0 0.0 0.0").T
+        C_true = np.array("1.0 1.0 1.0 1.0")
         D_true = 42.0
 
         # Perform a coordinate transform with a random invertible matrix
-        T_true = np.matrix([[-0.27144004, -0.39933167,  0.75634684,  0.44135471],
+        T_true = np.array([[-0.27144004, -0.39933167,  0.75634684,  0.44135471],
                             [-0.74855725, -0.39136285, -0.18142339, -0.50356997],
                             [-0.40688007,  0.81416369,  0.38002113, -0.16483334],
                             [-0.44769516,  0.15654653, -0.50060858,  0.72419146]])
         A = np.linalg.solve(T_true, A_true)*T_true
         B = np.linalg.solve(T_true, B_true)
-        C = C_true*T_true
+        C = C_true @ T_true
         D = D_true
 
         # Create a state space system and convert it to the reachable canonical form
