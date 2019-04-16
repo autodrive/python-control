@@ -96,7 +96,7 @@ def hsvd(sys):
     w, v = np.linalg.eig(WoWc)
 
     hsv = np.sqrt(w)
-    hsv = np.matrix(hsv)
+    hsv = np.array(hsv)
     hsv = np.sort(hsv)
     hsv = np.fliplr(hsv)
     # Return the Hankel singular values
