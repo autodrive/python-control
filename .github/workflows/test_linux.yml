@@ -23,3 +23,9 @@ jobs:
         PYTHON: ${{ matrix.python }}
       run: 
         source ./.github/workflows/before_install.sh
+    - name: install
+      env:
+        SCIPY: ${{ matrix.scipy }}
+        SLYCOT: ${{ matrix.slycot }}
+      run: 
+        source ./.github/workflows/install.sh
