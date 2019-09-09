@@ -4,7 +4,7 @@ on : [push]
 
 jobs:
   build:
-    name: Python ${{ matrix.python }} with TEST_CONDA=${{ matrix.test_conda }}
+    name: Python ${{ matrix.python }} ${{ matrix.slycot }} ${{ matrix.scipy }}
     runs-on: ubuntu-16.04
     strategy:
       matrix:
