@@ -1,0 +1,19 @@
+name: CI linux
+
+on : [push]
+
+jobs:
+  build:
+    name: Python ${{ matrix.python }} with TEST_CONDA=${{ matrix.test_conda }}
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        python: [2.7, 3.6, 3.7]
+        slycot: [slycot, '']
+        scipy: [scipy, scipy==0.19.1]
+        exclude:
+          python: 3.7
+          slycot: ''
+          scipy: scipy==0.19.1
+    steps:
+    - uses: actions/checkout@v1
