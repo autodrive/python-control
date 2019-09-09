@@ -1,4 +1,4 @@
-. set_os_env.sh
+. ./.github/workflows/set_os_env.sh
 # Install gfortran for testing slycot; use apt-get instead of conda in
 # order to include the proper CXXABI dependency (updated in GCC 4.9)
 if [[ "$SLYCOT" != "" ]]; then
