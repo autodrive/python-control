@@ -34,3 +34,7 @@ jobs:
         SLYCOT: ${{ matrix.slycot }}
       run: 
         source ./.github/workflows/run_tests.sh
+    - name: coverall
+      run: 
+        pip install coveralls
+        coveralls
