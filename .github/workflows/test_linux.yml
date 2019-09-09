@@ -29,3 +29,8 @@ jobs:
         SLYCOT: ${{ matrix.slycot }}
       run: 
         source ./.github/workflows/install.sh
+    - name: run tests
+      env:
+        SLYCOT: ${{ matrix.slycot }}
+      run: 
+        source ./.github/workflows/run_tests.sh
