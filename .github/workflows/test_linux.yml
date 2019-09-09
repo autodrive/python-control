@@ -12,7 +12,7 @@ jobs:
         slycot: [slycot, '']
         scipy: [scipy, scipy==0.19.1]
         exclude:
-          python: 3.7
+          - python: 3.7
           slycot: ''
           scipy: scipy==0.19.1
     steps:
