@@ -2,13 +2,15 @@
 # TODO: replace with nose?
 
 . ./.github/workflows/service_xvfb.sh
-
 . ./.github/workflows/set_os_env.sh
 
 echo "source activate test-environment ==============="
 source activate test-environment
 
-'if [ $SLYCOT != "" ]; then python -c "import slycot"; fi'
+if [ $SLYCOT != "" ]; 
+    then python -c "import slycot"; 
+fi
+
 coverage run setup.py test
 
 # only run examples if Slycot is install
