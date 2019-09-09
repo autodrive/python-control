@@ -17,3 +17,9 @@ jobs:
             scipy: scipy==0.19.1
     steps:
     - uses: actions/checkout@v1
+    - name: before install
+      env:
+        SLYCOT: ${{ matrix.slycot }}
+        PYTHON: ${{ matrix.python }}
+      run: 
+        source ./.github/workflows/before_install.sh
